@@ -18,3 +18,7 @@ class 6502:
     BC 1<<3 'Break Command'
     OF 1<<2 'Overflow Command'
     NF 1<<1 'Negative Flag'
+
+    def execute(cycles, command){
+        
+    }
