@@ -2,12 +2,13 @@
 Memory structure
 '''
 
-class Memory:
-    int Mem[0xFFFF]
-    
-    def read_mem (location, value){
-    
-    }
 
-    def write_mem (location, value){}
-    
+class _MemoryMixin:
+    memory = [65536]
+
+    def read_mem(self, location):
+        print("read mem")
+        return self.memory[location]
+
+    def write_mem(self, location, value):
+        return True
