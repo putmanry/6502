@@ -1,4 +1,10 @@
 {
     "python.formatting.blackPath": "C:\\Users\\putma\\AppData\\Roaming\\Python\\Python39\\Scripts\\black",
-    "python.formatting.autopep8Path": "C:\\Users\\putma\\AppData\\Roaming\\Python\\Python39\\Scripts\\autopep8"
+    "python.formatting.autopep8Path": "C:\\Users\\putma\\AppData\\Roaming\\Python\\Python39\\Scripts\\autopep8",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.pytestEnabled": true
 }
