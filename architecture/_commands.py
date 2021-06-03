@@ -10,23 +10,33 @@ class _CommandsMixin:
     these funcitons have to come before the instructions dictionaty
     """
 
-    def NOP(self):
-        print("NOP")
+    def NOP(self, cycles):
+        print("Not implemented")
+        return cycles
 
-    def NOP1(self):
-        print("NOP 1")
+    """  ========= LDA Functions ========= """
 
-    def LDA(self):
-        print("LDA")
-        value = self.read_mem(self.PC + 1)
-        self.PC = self.PC + 1
+    # What LDA normally does.
+    def LDA(self, value):
         self.A = value
         if self.A == 0:
             self.ZF = 0
         self.NF = (self.A & 0b1000000) > 0
 
-    """  
-        Dictionary which allows us to lookup the various opcodes and call the 
+    # Handles LDA with Immediate load
+    def LDA_Immediate(self, cycles):
+        value, cycles = self.Immediate(cycles)
+        self.LDA(value)
+        return cycles
+
+    # Handles LDA with Absolute reference load
+    def LDA_Absolute(self, cycles):
+        value, cycles = self.Absolute(cycles)
+        self.LDA(value)
+        return cycles
+
+    """
+        Dictionary which allows us to lookup the various opcodes and call the
         associated function.
     """
     instructions = {
@@ -39,7 +49,7 @@ class _CommandsMixin:
         0x07: NOP,
         0x08: NOP,
         0x09: NOP,
-        0x0A: NOP1,
+        0x0A: NOP,
         0x0B: NOP,
         0x0C: NOP,
         0x0D: NOP,
@@ -194,11 +204,11 @@ class _CommandsMixin:
         0xA2: NOP,
         0xA3: NOP,
         0xA4: NOP,
-        0xA5: NOP,
+        0xA5: LDA_Absolute,
         0xA6: NOP,
         0xA7: NOP,
         0xA8: NOP,
-        0xA9: LDA,
+        0xA9: LDA_Immediate,
         0xAA: NOP,
         0xAB: NOP,
         0xAC: NOP,

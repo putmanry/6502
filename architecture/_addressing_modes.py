@@ -16,18 +16,26 @@ class _AddressingModesMixin:
         """
         return True
 
-    def Absolute(self):
+    def Absolute(self, cycles):
         """
-        Teh second and the third bytes of the instruction specify the memory address where data is located
+        The second and the third bytes of the instruction specify the memory
+        address where data is located
         """
         print("Absolute addressing mode")
-        return True
+        # TODO: This is wrong, fix it. Looks more like Immediate mode
+        value = self.read_word(self.PC + 1)
+        self.PC = self.PC + 1
+        cycles = cycles - 1
+        return value, cycles
 
-    def Immediate():
+    def Immediate(self, cycles):
         """
-        8 bit data is provided as the second bte in the instruction
+        8 bit data is provided as the second byte in the instruction
         """
-        return True
+        print("Immediate Adderssing mode")
+        cycles = cycles - 1
+        value = self.read_mem(self.PC + 1)
+        return value, cycles
 
     def ZeroPage():
         """

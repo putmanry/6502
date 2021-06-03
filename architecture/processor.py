@@ -6,46 +6,25 @@ and here: https://www.cpu-world.com/Arch/650x.html
 from ._memory import _MemoryMixin
 from ._addressing_modes import _AddressingModesMixin
 from ._commands import _CommandsMixin
+from ._flags import _FlagsMixin
 
 
-class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin):
-    PC = 0  # Program counter
-    SP = 0  # Stack pointer
-    A = 0  # Accumulator
-    x = 0  # X register
-    y = 0  # Y register
-    Status = 0  # Processor Status
+class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin, _FlagsMixin):
+    def __init__(self) -> None:
+        super().__init__()
+        self.PC = 0  # Program counter
+        self.SP = 0  # Stack pointer
+        self.A = 0  # Accumulator
+        self.x = 0  # X register
+        self.y = 0  # Y register
+        self.Status = 0  # Processor Status
 
+    def __str__(self):
+        print("PC: 0x{:04x}      SP: 0x{:04x}".format(self.PC, self.SP))
+        print(" X: 0x{:04x}       Y: 0x{:04x}".format(self.x, self.y))
+        print(" A: 0x{:04x}  Status: 0x{:04x}".format(self.A, self.Status))
 
-'''
-TODO: Create get/set/clear/etc functions for the registers
-'''
-
-"""
-    flags = 0
-    CF = 1 << 0
-    ZF = 1 << 1
-    ID = 1 << 2
-    DM = 1 << 3
-    BC = 1 << 4
-    Unused = 1 << 5
-    OV = 1 << 6
-    NF = 1 << 7
-"""
-
-'''
-TODO: move registers to a class on it's own
-do set/clr/test members for it
-'''
-
-
-    CF = 0  # Carry Flag Bit
-    ZF = 0  # Zero Flag Bit
-    ID = 0  # Interrupt Disable
-    DM = 0  # Decimal mode
-    BC = 0  # Break Command
-    OF = 0  # Overflow Command
-    NF = 0  # Negative Flag
+    """ CPU Reset - initializes the state of the CPU """
 
     def reset(self):
         self.PC = 0xFFFC
@@ -58,13 +37,74 @@ do set/clr/test members for it
 
         self.mem_intialize()
 
-    def execute(self, cycles):
-        self.PC = 0
+    """ CPU executes number of cycles """
+
+    def execute(self, cycles=1):
         while cycles > 0:
             cmd = self.read_mem(self.PC)
-            self.instructions[cmd](self)
-            self.instructions[0xA9](self)
+            cycles = self.instructions[cmd](self, cycles)
             cycles = cycles - 1
             self.PC = self.PC + 1
-            print("PC %s cycles %s" % (self.PC, cycles))
+            print("PC 0x{:04x} cycles {}".format(self.PC, cycles))
         return True
+
+    # ======================= Getter/Setters ===================
+    """ Getter/Setter for the PC Register """
+
+    @property
+    def PC(self):
+        return self._PC
+
+    @PC.setter
+    def PC(self, value):
+        self._PC = value
+
+    """ Getter/Setter for the SP Register """
+
+    @property
+    def SP(self):
+        return self._SP
+
+    @SP.setter
+    def SP(self, value):
+        self._SP = value
+
+    """ Getter/Setter for the A Register """
+
+    @property
+    def A(self):
+        return self._A
+
+    @A.setter
+    def A(self, value):
+        self._A = value
+
+    """ Getter/Setter for the X Register """
+
+    @property
+    def X(self):
+        return self._X
+
+    @X.setter
+    def X(self, value):
+        self._X = value
+
+    """ Getter/Setter for the Y Register """
+
+    @property
+    def Y(self):
+        return self._Y
+
+    @Y.setter
+    def Y(self, value):
+        self._Y = value
+
+    """ Getter/Setter for the Status Register """
+
+    @property
+    def Status(self):
+        return self._Status
+
+    @Status.setter
+    def Status(self, value):
+        self._Status = value

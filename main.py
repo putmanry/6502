@@ -5,8 +5,8 @@ def main():
 
     processor = CPU_6502()
     processor.reset()
-    var = processor.execute(5)
-    print(var)
+    processor.__str__()
+    var = processor.execute(2)
 
 
 if __name__ == "__main__":
