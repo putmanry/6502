@@ -4,18 +4,6 @@ Addressing modes for the CPU
 
 
 class _AddressingModesMixin:
-    def Implied():
-        """
-        The data value/data adress is implicity associted with the instruction.
-        """
-        return True
-
-    def Accumulator():
-        """
-        The instruction implies that the data is in the accumulator
-        """
-        return True
-
     def Absolute(self, cycles):
         """
         The second and the third bytes of the instruction specify the memory
@@ -37,55 +25,40 @@ class _AddressingModesMixin:
         value = self.read_mem(self.PC + 1)
         return value, cycles
 
-    def ZeroPage():
+    def ZeroPage(self, cycles):
         """
-        The second byte in the instruction points to lcation in page zero (0000h - 00ffh) where data is stored
+        The second byte in the instruction points to location in page
+        zero (0000h - 00ffh) where data is stored
         """
-        return True
+        print("Zero Page Addressing Mode")
+        value = self.read_mem(self.PC + 1)
+        if value >= 0x00 and value <= 0xFF:
+            cycles = cycles - 2
+            value = self.read_mem(value)
+        else:
+            print("error zero page address out of bounds")
+        return value, cycles
 
-    def IndexedZeroPage():
+    def ZeroPageWithX(self, cycles):
         """
-        the contents of the X or Y register is added to the second byte of the instruction (carry is ignored),
-        and the resulting byte is a memory offset in page zero (0000h - 00FFh) where data is located. This form of
-        addressing is written as "addr8, X" or "addr8, Y", where addr8 is an 8-bit value.
-        """
-        return True
+        The address to be accessed by an instruction using indexed zero
+        page addressing is calculated by taking the 8 bit zero page address
+        from the instruction and adding the current value of the X register
+        to it. For example if the X register contains $0F and the instruction
+        LDA $80,X is executed then the accumulator will be loaded from $008F
+        (e.g. $80 + $0F => $8F).
 
-    def IndexedAbsolute():
+        NB:
+        The address calculation wraps around if the sum of the base address
+        and the register exceed $FF. If we repeat the last example but with $FF
+        in the X register then the accumulator will be loaded from $007F
+        (e.g. $80 + $FF => $7F) and not $017F.
         """
-        the contents of the X or Y register is added to the 16-bit pointer specified in the second and third
-        bytes of the instruction, and the resulting 16-bit value is a pointer to memory where data is located.
-        This form of addressing is written as "addr16, X" or "addr16, Y", where addr16 is a 16-bit value.
-        """
-        return True
-
-    def Relateive():
-        """
-        one byte offset is added to the contents of the program counter register. The offset is a signed number
-        in the range -127 - +128.
-        """
-        return True
-
-    def IndexedDirect():
-        """
-        the contents of the X register is added to the second byte provided in the instruction (carry is ignored),
-        the resulting byte is a memory offset in page zero where a 16-bit pointer is stored. The 16-pointer points to data.
-        This type of addressing is written as "(addr8, X)", where addr8 is an 8-bit value. This addressing is useful for
-        addressing an array of data pointers.
-        """
-        return True
-
-    def IndirectIndexed():
-        """
-        the second byte in the instruction points to memory in page zero where 16-bit data pointer is stored.
-        This pointer is added to the contents of the Y register, the resulting 16-bit value is an offset to memory where
-        data is located. This type of addressing is written as "(addr8), Y", where addr8 is an 8-bit value.
-        """
-        return True
-
-    def AbsoluteIndirect():
-        """
-        The second and third bytes in the instruction specify the memory address containing 16-bit data, which is loaded
-        into the program counter. This type of addressing is written as "(addr16)", where addr16 is a 16-bit value.
-        """
-        return True
+        print("Zero Page Addressing Mode")
+        value = self.read_mem(self.PC + 1)
+        if value >= 0x00 and value <= 0xFF:
+            cycles = cycles - 2
+            value = self.read_mem(value)
+        else:
+            print("error zero page address out of bounds")
+        return value, cycles

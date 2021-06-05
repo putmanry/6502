@@ -20,8 +20,14 @@ class _CommandsMixin:
     def LDA(self, value):
         self.A = value
         if self.A == 0:
-            self.ZF = 0
-        self.NF = (self.A & 0b1000000) > 0
+            self.ZF = 1
+        self.NF = int(self.A >= 0x40)
+
+    # LDA with Zero page addressing.
+    def LDA_ZeroPage(self, cycles):
+        value, cycles = self.ZeroPage(cycles)
+        self.LDA(value)
+        return cycles
 
     # Handles LDA with Immediate load
     def LDA_Immediate(self, cycles):
@@ -29,9 +35,8 @@ class _CommandsMixin:
         self.LDA(value)
         return cycles
 
-    # Handles LDA with Absolute reference load
-    def LDA_Absolute(self, cycles):
-        value, cycles = self.Absolute(cycles)
+     def LDA_ZeroPageWithX(self, cycles):
+        value, cycles = self.ZeroPage(cycles)
         self.LDA(value)
         return cycles
 
@@ -204,7 +209,7 @@ class _CommandsMixin:
         0xA2: NOP,
         0xA3: NOP,
         0xA4: NOP,
-        0xA5: LDA_Absolute,
+        0xA5: LDA_ZeroPage,
         0xA6: NOP,
         0xA7: NOP,
         0xA8: NOP,
