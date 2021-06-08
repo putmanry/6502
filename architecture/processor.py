@@ -41,10 +41,6 @@ class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin, _FlagsMixin)
 
     def execute(self, cycles=1):
 
-        self.memory[0xFFFC] = 0xA5
-        self.memory[0xFFFD] = 0x00
-        self.memory[0x00] = 0x10
-
         while cycles > 0:
             cmd = self.read_mem(self.PC)
             cycles = self.instructions[cmd](self, cycles)

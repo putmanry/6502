@@ -25,18 +25,27 @@ class _CommandsMixin:
 
     # LDA with Zero page addressing.
     def LDA_ZeroPage(self, cycles):
+        self.PC += 1
         value, cycles = self.ZeroPage(cycles)
         self.LDA(value)
         return cycles
 
     # Handles LDA with Immediate load
     def LDA_Immediate(self, cycles):
+        self.PC += 1
         value, cycles = self.Immediate(cycles)
         self.LDA(value)
         return cycles
 
-     def LDA_ZeroPageWithX(self, cycles):
-        value, cycles = self.ZeroPage(cycles)
+    def LDA_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ZeroPageWithX(cycles)
+        self.LDA(value)
+        return cycles
+
+    def LDA_Absolute(self, cycles):
+        self.PC += 1
+        value, cycles = self.Absolute(cycles)
         self.LDA(value)
         return cycles
 
@@ -217,7 +226,7 @@ class _CommandsMixin:
         0xAA: NOP,
         0xAB: NOP,
         0xAC: NOP,
-        0xAD: NOP,
+        0xAD: LDA_Absolute,
         0xAE: NOP,
         0xAF: NOP,
         0xB0: NOP,
@@ -225,7 +234,7 @@ class _CommandsMixin:
         0xB2: NOP,
         0xB3: NOP,
         0xB4: NOP,
-        0xB5: NOP,
+        0xB5: LDA_ZeroPageWithX,
         0xB6: NOP,
         0xB7: NOP,
         0xB8: NOP,
