@@ -22,7 +22,7 @@ class _MemoryMixin:
 
     def read_word(self, location):
         if location >= 0 and location <= MAX_MEM:
-            # print("read byte location", location)
+            # print("read word location", location)
             loc_lo = self.memory[location]
             loc_hi = self.memory[location + 1]
             value = loc_hi << 8 | loc_lo

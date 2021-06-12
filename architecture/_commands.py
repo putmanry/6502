@@ -49,6 +49,30 @@ class _CommandsMixin:
         self.LDA(value)
         return cycles
 
+    def LDA_AbsoluteWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.AbsoluteWithX(cycles)
+        self.LDA(value)
+        return cycles
+
+    def LDA_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.AbsoluteWithY(cycles)
+        self.LDA(value)
+        return cycles
+
+    def LDA_IndirectWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.IndirectWithX(cycles)
+        self.LDA(value)
+        return cycles
+
+    def LDA_IndirectWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.IndirectWithY(cycles)
+        self.LDA(value)
+        return cycles
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
@@ -230,7 +254,7 @@ class _CommandsMixin:
         0xAE: NOP,
         0xAF: NOP,
         0xB0: NOP,
-        0xB1: NOP,
+        0xB1: LDA_IndirectWithY,
         0xB2: NOP,
         0xB3: NOP,
         0xB4: NOP,
@@ -238,11 +262,11 @@ class _CommandsMixin:
         0xB6: NOP,
         0xB7: NOP,
         0xB8: NOP,
-        0xB9: NOP,
+        0xB9: LDA_AbsoluteWithY,
         0xBA: NOP,
         0xBB: NOP,
         0xBC: NOP,
-        0xBD: NOP,
+        0xBD: LDA_AbsoluteWithX,
         0xBE: NOP,
         0xBF: NOP,
         0xC0: NOP,

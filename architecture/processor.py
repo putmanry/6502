@@ -2,6 +2,7 @@
 6502 CPU Emulator
 Using data here: http://www.obelisk.me.uk/index.html
 and here: https://www.cpu-world.com/Arch/650x.html
+and here: https://www.c64-wiki.com/
 """
 from ._memory import _MemoryMixin
 from ._addressing_modes import _AddressingModesMixin
@@ -34,6 +35,7 @@ class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin, _FlagsMixin)
         self.y = 0
         self.Status = 0
         self.flags = 0
+        self.flags_reset()
 
         self.mem_intialize()
 
