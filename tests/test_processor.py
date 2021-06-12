@@ -2,11 +2,14 @@
 import unittest
 from architecture.processor import CPU_6502
 import copy
+import datetime
 
 
 class Test_LDAInstructions(unittest.TestCase):
     def setUp(self) -> None:
         print("\n*************** New Test Run ****************")
+        ct = datetime.datetime.now()
+        print("timestamp: ", ct)
         self.processor = CPU_6502()
         self.processor.reset()
         # self.processor.__str__()
@@ -152,14 +155,57 @@ class Test_LDAInstructions(unittest.TestCase):
         print("Complete: test_LDAwithZeroPageWithX =======")
         del CPUCopy
 
+    def test_AbsoluteWithX(self):
+        # For comparison at the end to ensure not inadvertent register flags changed
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # Test 1 -
+        # If X containes 0x92 and we have an LDA 0x2000, X the instruction will load from
+        # 0x2092.
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x82])
+        self.processor.X = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "1 - LDAAbsoluteWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 2 -
+        # For 0x32 - ZF shoudl not change and NF should not change
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x32])
+        self.processor.X = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x32, "2 - LDAAbsoluteWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+
+        # Test 3 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x00])
+        self.processor.X = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x00, "2 - LDAAbsoluteWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
+
+        # TODO: need to deal boundary crossing.
+        # if the addition of the X byte causes the lo byte to overflow
+        # into the upper byte that adds an extra cycle.
+
+        print("Complete: LDAAbsoluteWithX =======")
+        del CPUCopy
+
     def test_LDAwithAbsolute(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
         # Test 1 -
-        # Load from mem loc 0x10 Must be between 0x00 and 0xFF
-        # For the locaion the MSB is always 0x00
-        # For 0x82 - ZF should not change and NF get set
+        # Instruction contains the full 16 bit address to the identify the target location
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x4480, 0x82])
         self.programSetup(instructions)
         self.processor.LDA_Absolute(3)
@@ -189,4 +235,199 @@ class Test_LDAInstructions(unittest.TestCase):
         self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
 
         print("Complete: test_LDAwithAbsolute =======")
+        del CPUCopy
+
+    def test_AbsoluteWithY(self):
+        # For comparison at the end to ensure not inadvertent register flags changed
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # Test 1 -
+        # If X containes 0x92 and we have an LDA 0x2000, X the instruction will load from
+        # 0x2092.
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x82])
+        self.processor.Y = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "1 - LDAAbsoluteWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 2 -
+        # For 0x32 - ZF shoudl not change and NF should not change
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x32])
+        self.processor.Y = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x32, "2 - LDAAbsoluteWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+
+        # Test 3 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x00])
+        self.processor.Y = 0x0F
+        self.programSetup(instructions)
+        self.processor.LDA_AbsoluteWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x00, "2 - LDAAbsoluteWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
+
+        # TODO: need to deal with wrapping at top end.
+
+        print("Complete: LDAAbsoluteWithY=======")
+        del CPUCopy
+
+    def test_IndirectWithX(self):
+        # For comparison at the end to ensure not inadvertent register flags changed
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # Test 1 -
+        # If X containes 0x92 and we have an LDA 0x2000, X the instruction will load from
+        # 0x2092.
+        instructions = (
+            [0xFFFC, 0xA1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x82],
+        )
+        self.processor.X = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "1 - LDAIndirectWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 2 -
+        # For 0x32 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xA1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x32],
+        )
+        self.processor.X = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x32, "2 - LDAIndirectWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+
+        # Test 3 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xA1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x00],
+        )
+        self.processor.X = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x00, "3 - LDAIndirectWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
+
+        # Test 4 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xA1],
+            [0xFFFD, 0x20],
+            [0x0024, 0x74],
+            [0x0025, 0x20],
+            [0x2074, 0x82],
+        )
+        self.processor.X = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "4 - LDAIndirectWithX failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        print("Complete: LDAIndirectWithX =======")
+        del CPUCopy
+
+    def test_IndirectWithY(self):
+        # For comparison at the end to ensure not inadvertent register flags changed
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # Test 1 -
+        # If Y containes 0x92 and we have an LDA 0x2000, X the instruction will load from
+        # 0x2092.
+        instructions = (
+            [0xFFFC, 0xB1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x82],
+        )
+        self.processor.Y = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "1 - LDAIndirectWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 2 -
+        # For 0x32 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xB1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x32],
+        )
+        self.processor.Y = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x32, "2 - LDAIndirectWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+
+        # Test 3 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xB1],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, 0x00],
+        )
+        self.processor.Y = 0x04
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x00, "3 - LDAIndirectWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
+
+        # Test 4 -
+        # For 0x00 - ZF shoudl not change and NF should not change
+        instructions = (
+            [0xFFFC, 0xB1],
+            [0xFFFD, 0x86],
+            [0x0086, 0x28],
+            [0x0087, 0x40],
+            [0x4038, 0x82],
+        )
+        self.processor.Y = 0x10
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "4 - LDAIndirectWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        print("Complete: LDAIndirectWithY =======")
         del CPUCopy
