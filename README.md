@@ -1,3 +1,2 @@
 # 6502
-6502 CPU emulation project
-Blad blah blah
+6502 CPU emulation project with python
