@@ -2,6 +2,19 @@
 All the processor instructions
 """
 
+# reread: https://stackoverflow.com/questions/47561840/python-how-can-i-separate-functions-of-class-into-multiple-files
+from architecture.LDA import (
+    LDA_Absolute,
+    LDA_AbsoluteWithX,
+    LDA_AbsoluteWithY,
+    LDA_Immediate,
+    LDA_IndirectWithX,
+    LDA_IndirectWithY,
+    LDA_ZeroPage,
+    LDA_ZeroPageWithX,
+    LDA,
+)
+
 
 class _CommandsMixin:
 
@@ -17,61 +30,21 @@ class _CommandsMixin:
     """  ========= LDA Functions ========= """
 
     # What LDA normally does.
-    def LDA(self, value):
-        self.A = value
-        if self.A == 0:
-            self.ZF = 1
-        self.NF = int(self.A >= 0x40)
 
-    # LDA with Zero page addressing.
-    def LDA_ZeroPage(self, cycles):
-        self.PC += 1
-        value, cycles = self.ZeroPage(cycles)
-        self.LDA(value)
-        return cycles
+    def LDX_Immediate(self, cycles):
+        return True
 
-    # Handles LDA with Immediate load
-    def LDA_Immediate(self, cycles):
-        self.PC += 1
-        value, cycles = self.Immediate(cycles)
-        self.LDA(value)
-        return cycles
+    def LDX_Absolute(self, cycles):
+        return True
 
-    def LDA_ZeroPageWithX(self, cycles):
-        self.PC += 1
-        value, cycles = self.ZeroPageWithX(cycles)
-        self.LDA(value)
-        return cycles
+    def LDX_ZeroPage(self, cycles):
+        return True
 
-    def LDA_Absolute(self, cycles):
-        self.PC += 1
-        value, cycles = self.Absolute(cycles)
-        self.LDA(value)
-        return cycles
+    def LDX_ZeroPageY(self, cycles):
+        return True
 
-    def LDA_AbsoluteWithX(self, cycles):
-        self.PC += 1
-        value, cycles = self.AbsoluteWithX(cycles)
-        self.LDA(value)
-        return cycles
-
-    def LDA_AbsoluteWithY(self, cycles):
-        self.PC += 1
-        value, cycles = self.AbsoluteWithY(cycles)
-        self.LDA(value)
-        return cycles
-
-    def LDA_IndirectWithX(self, cycles):
-        self.PC += 1
-        value, cycles = self.IndirectWithX(cycles)
-        self.LDA(value)
-        return cycles
-
-    def LDA_IndirectWithY(self, cycles):
-        self.PC += 1
-        value, cycles = self.IndirectWithY(cycles)
-        self.LDA(value)
-        return cycles
+    def LDX_AbsoluteWithY(self, cycles):
+        return True
 
     """
         Dictionary which allows us to lookup the various opcodes and call the
@@ -239,11 +212,11 @@ class _CommandsMixin:
         0x9F: NOP,
         0xA0: NOP,
         0xA1: NOP,
-        0xA2: NOP,
+        0xA2: LDX_Immediate,
         0xA3: NOP,
         0xA4: NOP,
         0xA5: LDA_ZeroPage,
-        0xA6: NOP,
+        0xA6: LDX_ZeroPage,
         0xA7: NOP,
         0xA8: NOP,
         0xA9: LDA_Immediate,
@@ -251,7 +224,7 @@ class _CommandsMixin:
         0xAB: NOP,
         0xAC: NOP,
         0xAD: LDA_Absolute,
-        0xAE: NOP,
+        0xAE: LDX_Absolute,
         0xAF: NOP,
         0xB0: NOP,
         0xB1: LDA_IndirectWithY,
@@ -259,7 +232,7 @@ class _CommandsMixin:
         0xB3: NOP,
         0xB4: NOP,
         0xB5: LDA_ZeroPageWithX,
-        0xB6: NOP,
+        0xB6: LDX_ZeroPageY,
         0xB7: NOP,
         0xB8: NOP,
         0xB9: LDA_AbsoluteWithY,
@@ -267,7 +240,7 @@ class _CommandsMixin:
         0xBB: NOP,
         0xBC: NOP,
         0xBD: LDA_AbsoluteWithX,
-        0xBE: NOP,
+        0xBE: LDX_AbsoluteWithY,
         0xBF: NOP,
         0xC0: NOP,
         0xC1: NOP,
