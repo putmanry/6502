@@ -1,8 +1,12 @@
-from architecture.processor import CPU_6502
+import unittest
 import datetime
+from architecture.processor import CPU_6502
 
 
-class _BaseInstruction:
+class _BaseTestMixin(unittest.TestCase):
+
+    __test__ = False
+
     def setUp(self) -> None:
         print("\n*************** New Test Run ****************")
         ct = datetime.datetime.now()
@@ -10,11 +14,9 @@ class _BaseInstruction:
         self.processor = CPU_6502()
         self.processor.reset()
         # self.processor.__str__()
-        return super().setUp()
 
     def tearDown(self) -> None:
         del self.processor
-        return super().tearDown()
 
     def checkRegisters(self, CPUCopy, ZFCopy=0, NFCopy=0):
         self.assertEqual(CPUCopy.CF, self.processor.CF, "CF not the same")

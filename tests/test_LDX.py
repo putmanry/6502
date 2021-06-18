@@ -1,15 +1,14 @@
-# from architecture.processor import CPU_6502
 import unittest
+from architecture.processor import CPU_6502
 import copy
-from architecture._base_instruction import _BaseInstruction
+import datetime
+import _BaseTest
 
 
-class Test_LDXInstructions(_BaseInstruction, unittest.TestCase):
-    def __init__(self):
-        super().__init__()
+class Test_LDXInstructions(_BaseTest._BaseTestMixin):
 
+    __test__ = True
 
-"""
     def test_LDXwithImmediate(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
@@ -20,7 +19,7 @@ class Test_LDXInstructions(_BaseInstruction, unittest.TestCase):
         self.programSetup(instructions)
         self.processor.LDX_Immediate(2)
         self.assertEqual(
-            self.processor.A, 0x82, "1 - LDXwithImmediate failed to load A correctly"
+            self.processor.X, 0x82, "1 - LDXwithImmediate failed to load A correctly"
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -30,7 +29,7 @@ class Test_LDXInstructions(_BaseInstruction, unittest.TestCase):
         self.programSetup(instructions)
         self.processor.LDX_Immediate(2)
         self.assertEqual(
-            self.processor.A, 0x32, "2 - LDXwithImmediate failed to load A correctly"
+            self.processor.X, 0x32, "2 - LDXwithImmediate failed to load A correctly"
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 0)
 
@@ -46,7 +45,7 @@ class Test_LDXInstructions(_BaseInstruction, unittest.TestCase):
         print("Complete: test_LDXwithImmediate =======")
         del CPUCopy
 
-"""
+
 """
     def test_LDXwithZeroPage(self):
         # For comparison at the end to ensure not inadvertent register flags changed

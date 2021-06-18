@@ -3,37 +3,12 @@ import unittest
 from architecture.processor import CPU_6502
 import copy
 import datetime
+import _BaseTest
 
 
-class Test_LDAInstructions(unittest.TestCase):
-    def setUp(self) -> None:
-        print("\n*************** New Test Run ****************")
-        ct = datetime.datetime.now()
-        print("timestamp: ", ct)
-        self.processor = CPU_6502()
-        self.processor.reset()
-        # self.processor.__str__()
-        return super().setUp()
+class Test_LDAInstructions(_BaseTest._BaseTestMixin):
 
-    def tearDown(self) -> None:
-        del self.processor
-        return super().tearDown()
-
-    def checkRegisters(self, CPUCopy, ZFCopy=0, NFCopy=0):
-        self.assertEqual(CPUCopy.CF, self.processor.CF, "CF not the same")
-        self.assertEqual(CPUCopy.ID, self.processor.ID, "ID not the same")
-        self.assertEqual(CPUCopy.DM, self.processor.DM, "DM not the same")
-        self.assertEqual(CPUCopy.BC, self.processor.BC, "BC not the same")
-        self.assertEqual(CPUCopy.OF, self.processor.OF, "OF not the same")
-
-        self.assertEqual(self.processor.ZF, ZFCopy, "ZF not set correctly")
-        self.assertEqual(self.processor.NF, NFCopy, "NF not set correctly")
-
-    def programSetup(self, instructions):
-        self.processor.reset()
-        # Inline program to test with
-        for i in range(len(instructions)):
-            self.processor.memory[instructions[i][0]] = instructions[i][1]
+    __test__ = True
 
     def test_LDAwithImmediate(self):
         # For comparison at the end to ensure not inadvertent register flags changed
@@ -360,17 +335,42 @@ class Test_LDAInstructions(unittest.TestCase):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
-        # Test 1 -
-        # If Y containes 0x92 and we have an LDA 0x2000, X the instruction will load from
-        # 0x2092.
+        # test 0 -
+        # The operand xx is a zero page address, the contents of xx are added with carry (C)
+        # to the Y register
+        #      xx + Y (C) the results containts the LSB of the EA
+        # The content of address $AA + $01 + C contain the MSB of the EA
+        # if Y = $E9 and
+        # if $A4 contains $51 and
+        # if $A5 contains $3F then:
+        # LDA ($A4), Y results in
+        # $A4 + Y (C) => ($51 + $E9) (C) => $13A (C) => $3A -> EA LSB and
+        # $A4 + $01 (C) -> ($3F + C) => ($3F + $01) => $40 -> EA MSB
+        #                                                   $403A EA
+
         instructions = (
             [0xFFFC, 0xB1],
-            [0xFFFD, 0x02],
-            [0x0006, 0x00],
-            [0x0007, 0x80],
-            [0x8000, 0x82],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+            [0x403A, 0x82],
         )
-        self.processor.Y = 0x04
+        self.processor.Y = 0xE9
+        self.programSetup(instructions)
+        self.processor.LDA_IndirectWithY(3)
+        self.assertEqual(
+            self.processor.A, 0x82, "0 - LDAIndirectWithY failed to load A"
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+        # Test 1 -
+        instructions = (
+            [0xFFFC, 0xB1],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+            [0x403A, 0x82],
+        )
+        self.processor.Y = 0xE9
         self.programSetup(instructions)
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
@@ -382,12 +382,12 @@ class Test_LDAInstructions(unittest.TestCase):
         # For 0x32 - ZF shoudl not change and NF should not change
         instructions = (
             [0xFFFC, 0xB1],
-            [0xFFFD, 0x02],
-            [0x0006, 0x00],
-            [0x0007, 0x80],
-            [0x8000, 0x32],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+            [0x403A, 0x32],
         )
-        self.processor.Y = 0x04
+        self.processor.Y = 0xE9
         self.programSetup(instructions)
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
@@ -399,12 +399,12 @@ class Test_LDAInstructions(unittest.TestCase):
         # For 0x00 - ZF shoudl not change and NF should not change
         instructions = (
             [0xFFFC, 0xB1],
-            [0xFFFD, 0x02],
-            [0x0006, 0x00],
-            [0x0007, 0x80],
-            [0x8000, 0x00],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+            [0x403A, 0x00],
         )
-        self.processor.Y = 0x04
+        self.processor.Y = 0xE9
         self.programSetup(instructions)
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
@@ -416,12 +416,12 @@ class Test_LDAInstructions(unittest.TestCase):
         # For 0x00 - ZF shoudl not change and NF should not change
         instructions = (
             [0xFFFC, 0xB1],
-            [0xFFFD, 0x86],
-            [0x0086, 0x28],
-            [0x0087, 0x40],
-            [0x4038, 0x82],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+            [0x403A, 0x82],
         )
-        self.processor.Y = 0x10
+        self.processor.Y = 0xE9
         self.programSetup(instructions)
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(

@@ -141,6 +141,8 @@ class _AddressingModesMixin:
         return value2, cycles
 
     def IndirectWithY(self, cycles):
+        # see also: https://slark.me/c64-downloads/6502-addressing-modes.pdf
+
         """
         This mode is only used with the Y register. It differs in the
         order that Y is applied to the indirectly fetched address. An example
@@ -157,9 +159,27 @@ class _AddressingModesMixin:
         significant byte of 16 bit address. The Y register is dynamically added
         to this value to generated the actual target address for operation.
         """
-        # TODO: Handle Zero Page Wrap around
-        print("IndirectWithY Addressing Mode")
-        value = self.read_mem(self.PC)  # gives us the 0x02
-        loc = self.Y + value  # gives the 0x02 + 0x04
-        value2 = self.read_word(loc)  # read from 0x06 to get the 0x0080
-        return value2, cycles
+        # The operand  $AA is a zero page address, the contents of $AA are added with carry (C)
+        # to the Y register
+        #      $AA + Y (C) the results containts the LSB of the EA
+        # The content of address $AA + $01 + C contain the MSB of the EA
+        # if Y = $E9 and
+        # if $A4 contains $51 and
+        # if $A5 contains $3F then:
+        # LDA ($A4), Y results in
+        # $AA + Y (C) => ($51 + $E9) (C) => $13A (C) => $3A -> EA LSB and
+        # $AA + $01 (C) -> ($3F + C) => ($3F + $01) => $40 -> EA MSB
+        #                                                   $403A EA
+        # print("IndirectWithY Addressing Mode")
+        value = self.read_mem(self.PC)  # fetch zero page location $A4 which is $51
+        value2 = self.read_mem(value)
+        lsb = value2 + self.Y  # $13A
+        if lsb > 0xFF:  # this means we had a carry
+            lsb = lsb - 0x100
+            msb = self.read_mem(value + 1) + 1
+        else:  # we didn't have a carry
+            msb = value2 + 1
+        loc = msb << 8 | lsb
+        value3 = self.read_mem(loc)
+
+        return value3, cycles
