@@ -28,50 +28,50 @@ class _CommandsMixin:
     # LDA with Zero page addressing.
     def LDA_ZeroPage(self, cycles):
         self.PC += 1
-        value, cycles = self.ZeroPage(cycles)
+        value, cycles = self.ReadZeroPage(cycles)
         self.LDA(value)
         return cycles
 
     # Handles LDA with Immediate load
     def LDA_Immediate(self, cycles):
         self.PC += 1
-        value, cycles = self.Immediate(cycles)
+        value, cycles = self.ReadImmediate(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_ZeroPageWithX(self, cycles):
         self.PC += 1
-        value, cycles = self.ZeroPageWithX(cycles)
+        value, cycles = self.ReadZeroPageWithX(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_Absolute(self, cycles):
         self.PC += 1
-        value, cycles = self.Absolute(cycles)
+        value, cycles = self.ReadAbsolute(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_AbsoluteWithX(self, cycles):
         self.PC += 1
-        value, cycles = self.AbsoluteWithX(cycles)
+        value, cycles = self.ReadAbsoluteWithX(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_AbsoluteWithY(self, cycles):
         self.PC += 1
-        value, cycles = self.AbsoluteWithY(cycles)
+        value, cycles = self.ReadAbsoluteWithY(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_IndirectWithX(self, cycles):
         self.PC += 1
-        value, cycles = self.IndirectWithX(cycles)
+        value, cycles = self.ReadIndirectWithX(cycles)
         self.LDA(value)
         return cycles
 
     def LDA_IndirectWithY(self, cycles):
         self.PC += 1
-        value, cycles = self.IndirectWithY(cycles)
+        value, cycles = self.ReadIndirectWithY(cycles)
         self.LDA(value)
         return cycles
 
@@ -85,20 +85,58 @@ class _CommandsMixin:
 
     def LDX_Immediate(self, cycles):
         self.PC += 1
-        value, cycles = self.Immediate(cycles)
+        value, cycles = self.ReadImmediate(cycles)
         self.LDX(value)
         return cycles
 
     def LDX_Absolute(self, cycles):
-        return True
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.LDX(value)
+        return cycles
 
     def LDX_ZeroPage(self, cycles):
-        return True
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(cycles)
+        self.LDX(value)
+        return cycles
 
-    def LDX_ZeroPageY(self, cycles):
-        return True
+    def LDX_ZeroPageWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithY(cycles)
+        self.LDX(value)
+        return cycles
 
     def LDX_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.LDX(value)
+        return cycles
+
+    """  ========= STA Functions ========= """
+
+    def STA_ZeroPage(self, cycles):
+        self.PC += 1
+        self.WriteZeroPage(cycles, self.A)
+
+    def STA_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        self.WriteZeroPageWithX(cycles, self.A)
+
+    def STA_Absolute(self, cycles):
+        self.PC += 1
+        self.WriteAbsolute(cycles, self.A)
+
+    def STA_AbsoluteWithX():
+        self.PC += 1
+
+    def STA_AbsoluteWithY():
+        return True
+
+    def STA_IndirectWithX():
+        return True
+
+    def STA_IndirectWithY():
         return True
 
     """
@@ -234,11 +272,11 @@ class _CommandsMixin:
         0x7E: NOP,
         0x7F: NOP,
         0x80: NOP,
-        0x81: NOP,
+        0x81: STA_IndirectWithX,
         0x82: NOP,
         0x83: NOP,
         0x84: NOP,
-        0x85: NOP,
+        0x85: STA_ZeroPage,
         0x86: NOP,
         0x87: NOP,
         0x88: NOP,
@@ -246,23 +284,23 @@ class _CommandsMixin:
         0x8A: NOP,
         0x8B: NOP,
         0x8C: NOP,
-        0x8D: NOP,
+        0x8D: STA_Absolute,
         0x8E: NOP,
         0x8F: NOP,
         0x90: NOP,
-        0x91: NOP,
+        0x91: STA_IndirectWithY,
         0x92: NOP,
         0x93: NOP,
         0x94: NOP,
-        0x95: NOP,
+        0x95: STA_ZeroPageWithX,
         0x96: NOP,
         0x97: NOP,
         0x98: NOP,
-        0x99: NOP,
+        0x99: STA_AbsoluteWithY,
         0x9A: NOP,
         0x9B: NOP,
         0x9C: NOP,
-        0x9D: NOP,
+        0x9D: STA_AbsoluteWithX,
         0x9E: NOP,
         0x9F: NOP,
         0xA0: NOP,
@@ -287,7 +325,7 @@ class _CommandsMixin:
         0xB3: NOP,
         0xB4: NOP,
         0xB5: LDA_ZeroPageWithX,
-        0xB6: LDX_ZeroPageY,
+        0xB6: LDX_ZeroPageWithY,
         0xB7: NOP,
         0xB8: NOP,
         0xB9: LDA_AbsoluteWithY,

@@ -18,7 +18,8 @@ class _MemoryMixin:
             return self.memory[location]
 
     def write_mem(self, location, value):
-        return True
+        print("write mem location 0x{:04x} data 0x{:04x}".format(location, value))
+        self.memory[location] = value
 
     def read_word(self, location):
         if location >= 0 and location <= MAX_MEM:
@@ -27,3 +28,11 @@ class _MemoryMixin:
             loc_hi = self.memory[location + 1]
             value = loc_hi << 8 | loc_lo
         return self.memory[value]
+
+    def read_word_address(self, location):
+        if location >= 0 and location <= MAX_MEM:
+            return self.memory[location]
+
+    def write_word(self, location, value):
+        print("write mem location 0x{:04x} data 0x{:04x}".format(location, value))
+        self.memory[location] = value

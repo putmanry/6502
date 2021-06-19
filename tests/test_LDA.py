@@ -5,6 +5,33 @@ import copy
 import datetime
 import _BaseTest
 
+"""
+LDA - Load Accumulator			
+			
+A,Z,N = M			
+			
+Loads a byte of memory into the accumulator setting the zero and negative flags as appropriate.			
+			
+C	Carry Flag	Not affected	
+Z	Zero Flag	Set if A = 0	
+I	Interrupt Disable	Not affected	
+D	Decimal Mode Flag	Not affected	
+B	Break Command	Not affected	
+V	Overflow Flag	Not affected	
+N	Negative Flag	Set if bit 7 of A is set	
+			
+Addressing Mode	Opcode	Bytes	Cycles
+Immediate	$A9	2	2
+Zero Page	$A5	2	3
+Zero Page,X	$B5	2	4
+Absolute	$AD	3	4
+Absolute,X	$BD	3	4 (+1 if page crossed)
+Absolute,Y	$B9	3	4 (+1 if page crossed)
+(Indirect,X)	$A1	2	6
+(Indirect),Y	$B1	2	5 (+1 if page crossed)
+			
+"""
+
 
 class Test_LDAInstructions(_BaseTest._BaseTestMixin):
 
@@ -95,8 +122,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         #    from 0x008F (0x80 + 0x0F)
         # For 0x82 - ZF should not change and NF get set
         instructions = ([0xFFFC, 0xB5], [0xFFFD, 0x80], [0x008F, 0x82])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A, 0x82, "1 - LDAwithZeroPageWithX failed to load A"
@@ -106,8 +133,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 2 -
         # For 0x32 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xB5], [0xFFFD, 0x80], [0x008F, 0x32])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A, 0x32, "2 - LDAwithZeroPageWithX failed to load A"
@@ -117,8 +144,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 3 -
         # For 0x00 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xB5], [0xFFFD, 0x80], [0x008F, 0x00])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A, 0x00, "2 - LDAwithZeroPageWithX failed to load A"
@@ -138,8 +165,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # If X containes 0x92 and we have an LDA 0x2000, X the instruction will load from
         # 0x2092.
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x82])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A, 0x82, "1 - LDAAbsoluteWithX failed to load A"
@@ -149,8 +176,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 2 -
         # For 0x32 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x32])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A, 0x32, "2 - LDAAbsoluteWithX failed to load A"
@@ -160,8 +187,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 3 -
         # For 0x00 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x00])
-        self.processor.X = 0x0F
         self.programSetup(instructions)
+        self.processor.X = 0x0F
         self.processor.LDA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A, 0x00, "2 - LDAAbsoluteWithX failed to load A"
@@ -220,8 +247,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # If X containes 0x92 and we have an LDA 0x2000, X the instruction will load from
         # 0x2092.
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x82])
-        self.processor.Y = 0x0F
         self.programSetup(instructions)
+        self.processor.Y = 0x0F
         self.processor.LDA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A, 0x82, "1 - LDAAbsoluteWithY failed to load A"
@@ -231,8 +258,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 2 -
         # For 0x32 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x32])
-        self.processor.Y = 0x0F
         self.programSetup(instructions)
+        self.processor.Y = 0x0F
         self.processor.LDA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A, 0x32, "2 - LDAAbsoluteWithY failed to load A"
@@ -242,8 +269,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         # Test 3 -
         # For 0x00 - ZF shoudl not change and NF should not change
         instructions = ([0xFFFC, 0xAD], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x00])
-        self.processor.Y = 0x0F
         self.programSetup(instructions)
+        self.processor.Y = 0x0F
         self.processor.LDA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A, 0x00, "2 - LDAAbsoluteWithY failed to load A"
@@ -269,8 +296,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x0007, 0x80],
             [0x8000, 0x82],
         )
-        self.processor.X = 0x04
         self.programSetup(instructions)
+        self.processor.X = 0x04
         self.processor.LDA_IndirectWithX(3)
         self.assertEqual(
             self.processor.A, 0x82, "1 - LDAIndirectWithX failed to load A"
@@ -286,8 +313,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x0007, 0x80],
             [0x8000, 0x32],
         )
-        self.processor.X = 0x04
         self.programSetup(instructions)
+        self.processor.X = 0x04
         self.processor.LDA_IndirectWithX(3)
         self.assertEqual(
             self.processor.A, 0x32, "2 - LDAIndirectWithX failed to load A"
@@ -303,8 +330,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x0007, 0x80],
             [0x8000, 0x00],
         )
-        self.processor.X = 0x04
         self.programSetup(instructions)
+        self.processor.X = 0x04
         self.processor.LDA_IndirectWithX(3)
         self.assertEqual(
             self.processor.A, 0x00, "3 - LDAIndirectWithX failed to load A"
@@ -320,8 +347,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x0025, 0x20],
             [0x2074, 0x82],
         )
-        self.processor.X = 0x04
         self.programSetup(instructions)
+        self.processor.X = 0x04
         self.processor.LDA_IndirectWithX(3)
         self.assertEqual(
             self.processor.A, 0x82, "4 - LDAIndirectWithX failed to load A"
@@ -355,8 +382,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x00A5, 0x3F],
             [0x403A, 0x82],
         )
-        self.processor.Y = 0xE9
         self.programSetup(instructions)
+        self.processor.Y = 0xE9
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
             self.processor.A, 0x82, "0 - LDAIndirectWithY failed to load A"
@@ -370,8 +397,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x00A5, 0x3F],
             [0x403A, 0x82],
         )
-        self.processor.Y = 0xE9
         self.programSetup(instructions)
+        self.processor.Y = 0xE9
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
             self.processor.A, 0x82, "1 - LDAIndirectWithY failed to load A"
@@ -387,8 +414,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x00A5, 0x3F],
             [0x403A, 0x32],
         )
-        self.processor.Y = 0xE9
         self.programSetup(instructions)
+        self.processor.Y = 0xE9
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
             self.processor.A, 0x32, "2 - LDAIndirectWithY failed to load A"
@@ -404,8 +431,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x00A5, 0x3F],
             [0x403A, 0x00],
         )
-        self.processor.Y = 0xE9
         self.programSetup(instructions)
+        self.processor.Y = 0xE9
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
             self.processor.A, 0x00, "3 - LDAIndirectWithY failed to load A"
@@ -421,8 +448,8 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
             [0x00A5, 0x3F],
             [0x403A, 0x82],
         )
-        self.processor.Y = 0xE9
         self.programSetup(instructions)
+        self.processor.Y = 0xE9
         self.processor.LDA_IndirectWithY(3)
         self.assertEqual(
             self.processor.A, 0x82, "4 - LDAIndirectWithY failed to load A"

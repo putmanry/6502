@@ -13,12 +13,12 @@ from ._flags import _FlagsMixin
 class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin, _FlagsMixin):
     def __init__(self) -> None:
         super().__init__()
-        self.PC = 0  # Program counter
-        self.SP = 0  # Stack pointer
-        self.A = 0  # Accumulator
-        self.x = 0  # X register
-        self.y = 0  # Y register
-        self.Status = 0  # Processor Status
+        self._PC = 0  # Program counter
+        self._SP = 0  # Stack pointer
+        self._A = 0  # Accumulator
+        self._X = 0  # X register
+        self._Y = 0  # Y register
+        self._Status = 0  # Processor Status
 
     def __str__(self):
         print("PC: 0x{:04x}      SP: 0x{:04x}".format(self.PC, self.SP))
@@ -31,8 +31,8 @@ class CPU_6502(_MemoryMixin, _AddressingModesMixin, _CommandsMixin, _FlagsMixin)
         self.PC = 0xFFFC
         self.SP = 0x0100
         self.A = 0
-        self.x = 0
-        self.y = 0
+        self.X = 0
+        self.Y = 0
         self.Status = 0
         self.flags = 0
         self.flags_reset()
