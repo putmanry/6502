@@ -127,17 +127,21 @@ class _CommandsMixin:
         self.PC += 1
         self.WriteAbsolute(cycles, self.A)
 
-    def STA_AbsoluteWithX():
+    def STA_AbsoluteWithX(self, cycles):
         self.PC += 1
+        self.WriteAbsoluteWithX(cycles, self.A)
 
-    def STA_AbsoluteWithY():
-        return True
+    def STA_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        self.WriteAbsoluteWithY(cycles, self.A)
 
-    def STA_IndirectWithX():
-        return True
+    def STA_IndirectWithX(self, cycles):
+        self.PC += 1
+        self.WriteIndirectWithX(cycles, self.A)
 
-    def STA_IndirectWithY():
-        return True
+    def STA_IndirectWithY(self, cycles):
+        self.PC += 1
+        self.WriteIndirectWithY(cycles, self.A)
 
     """
         Dictionary which allows us to lookup the various opcodes and call the

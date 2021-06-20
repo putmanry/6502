@@ -101,40 +101,86 @@ class Test_STAInstructions(_BaseTest._BaseTestMixin):
         CPUCopy = copy.deepcopy(self.processor)
 
         # Test 1 -
-        # If X containes 0x92 and we have an STA 0x2000, X the instruction will load from
-        # 0x2092.
-        instructions = ([0xFFFC, 0xBE], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x82])
-        self.processor.Y = 0x0F
+        instructions = ([0xFFFC, 0x8D], [0xFFFD, 0x80], [0xFFFE, 0x44])
         self.programSetup(instructions)
-        self.processor.STA_AbsoluteWithY(3)
-        self.assertEqual(
-            self.processor.X, 0x82, "1 - STAAbsoluteWithY failed to load X"
-        )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
-
-        # Test 2 -
-        # For 0x32 - ZF shoudl not change and NF should not change
-        instructions = ([0xFFFC, 0xBE], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x32])
+        self.processor.A = 0xAA
         self.processor.Y = 0x0F
-        self.programSetup(instructions)
         self.processor.STA_AbsoluteWithY(3)
+        loc_lo = instructions[1][1]
+        loc_hi = instructions[2][1]
+        value = loc_hi << 8 | loc_lo + self.processor.Y
         self.assertEqual(
-            self.processor.X, 0x32, "2 - STAAbsoluteWithY failed to load X"
+            self.processor.read_word_address(value),
+            0xAA,
+            "1 - STAAbsoluteWithY failed to save A",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
 
-        # Test 3 -
-        # For 0x00 - ZF shoudl not change and NF should not change
-        instructions = ([0xFFFC, 0xBE], [0xFFFD, 0x80], [0xFFFE, 0x44], [0x448F, 0x00])
-        self.processor.Y = 0x0F
-        self.programSetup(instructions)
-        self.processor.STA_AbsoluteWithY(3)
-        self.assertEqual(
-            self.processor.X, 0x00, "2 - STAAbsoluteWithY failed to load X"
-        )
-        self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
-
-        # TODO: need to deal with wrapping at top end.
-
         print("Complete: STAAbsoluteWithY=======")
+        del CPUCopy
+
+    def test_AbsoluteWithX(self):
+        CPUCopy = copy.deepcopy(self.processor)
+
+        instructions = ([0xFFFC, 0x8D], [0xFFFD, 0x80], [0xFFFE, 0x44])
+        self.programSetup(instructions)
+        self.processor.A = 0xAA
+        self.processor.X = 0x0F
+        self.processor.STA_AbsoluteWithX(3)
+        loc_lo = instructions[1][1]
+        loc_hi = instructions[2][1]
+        value = loc_hi << 8 | loc_lo + self.processor.X
+        self.assertEqual(
+            self.processor.read_word_address(value),
+            0xAA,
+            "1 - STAAbsoluteWithX failed to save A",
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+
+        print("Complete: STAAbsoluteWithX=======")
+        del CPUCopy
+
+    def test_IndirectWithX(self):
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # Test 1 -
+        instructions = ([0xFFFC, 0x81], [0xFFFD, 0x10])
+        self.programSetup(instructions)
+        self.processor.A = 0xAA
+        self.processor.X = 0x04
+        self.processor.STA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.read_mem(instructions[1][1] + self.processor.X),
+            0xAA,
+            "1 - STAIndirectWithX failed to load A",
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        print("Complete: STAIndirectWithX=======")
+        del CPUCopy
+
+    def test_IndirectWithY(self):
+        CPUCopy = copy.deepcopy(self.processor)
+
+        # TODO: This needs lots of work.
+        # Test 1 -
+        instructions = (
+            [0xFFFC, 0x81],
+            [0xFFFD, 0xA4],
+            [0x00A4, 0x51],
+            [0x00A5, 0x3F],
+        )
+        self.programSetup(instructions)
+        self.processor.A = 0xAA
+        self.processor.Y = 0x04
+        self.processor.STA_IndirectWithY(3)
+        loc_lo = instructions[2][1]
+        loc_hi = instructions[3][1]
+        value = loc_hi << 8 | loc_lo + self.processor.Y
+        self.assertEqual(
+            self.processor.read_mem(value),
+            0xAA,
+            "1 - STAIndirectWithY failed to load A",
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        print("Complete: STAIndirectWithY=======")
         del CPUCopy

@@ -268,7 +268,7 @@ class _AddressingModesMixin:
         cycles = cycles - 3
         return cycles
 
-    def WriteAbsoluteWithX(self, cycles):
+    def WriteAbsoluteWithX(self, cycles, data):
         """
         The address to be accessed by an instruction using X register indexed
         absolute addressing is computed by taking the 16 bit address from
@@ -284,10 +284,10 @@ class _AddressingModesMixin:
         loc = (lo_byte << 8) | hi_byte
         loc = loc + self.X
         cycles = cycles - 3
-        value2 = self.read_mem(loc)
-        return value2, cycles
+        self.write_mem(loc, data)
+        return cycles
 
-    def WriteAbsoluteWithY(self, cycles):
+    def WriteAbsoluteWithY(self, cycles, data):
         """
         The address to be accessed by an instruction using Y register indexed
         absolute addressing is computed by taking the 16 bit address from
@@ -303,10 +303,10 @@ class _AddressingModesMixin:
         loc = (lo_byte << 8) | hi_byte
         loc = loc + self.Y
         cycles = cycles - 3
-        value2 = self.read_mem(loc)
-        return value2, cycles
+        self.write_mem(loc, data)
+        return cycles
 
-    def WriteIndirectWithX(self, cycles):
+    def WriteIndirectWithX(self, cycles, data):
         """The vector is chosen by adding the value in the X index register
         to the given zero page address. The resulting zero page address is the
         vector from which the effective address is read.
@@ -331,12 +331,12 @@ class _AddressingModesMixin:
 
         # TODO: Handle Zero Page Wrap around
         print("IndirectWithX Addressing Mode")
-        value = self.read_mem(self.PC)  # gives us the 0x02
-        loc = self.X + value  # gives the 0x02 + 0x04
-        value2 = self.read_word(loc)  # read from 0x06 to get the 0x0080
-        return value2, cycles
+        value = self.read_mem(self.PC)
+        loc = self.X + value
+        self.write_mem(loc, data)
+        return cycles
 
-    def WriteIndirectWithY(self, cycles):
+    def WriteIndirectWithY(self, cycles, data):
         # see also: https://slark.me/c64-downloads/6502-addressing-modes.pdf
 
         """
@@ -376,9 +376,9 @@ class _AddressingModesMixin:
         else:  # we didn't have a carry
             msb = value2 + 1
         loc = msb << 8 | lsb
-        value3 = self.read_mem(loc)
+        self.write_mem(loc, data)
 
-        return value3, cycles
+        return cycles
 
     def WriteZeroPageWithY(self, cycles):
         """
