@@ -143,6 +143,34 @@ class _CommandsMixin:
         self.PC += 1
         self.WriteIndirectWithY(cycles, self.A)
 
+    """  ========= STX Functions ========= """
+
+    def STX_ZeroPage(self, cycles):
+        self.PC += 1
+        self.WriteZeroPage(cycles, self.X)
+
+    def STX_ZeroPageWithY(self, cycles):
+        self.PC += 1
+        self.WriteZeroPageWithY(cycles, self.X)
+
+    def STX_Absolute(self, cycles):
+        self.PC += 1
+        self.WriteAbsolute(cycles, self.X)
+
+    """  ========= STy Functions ========= """
+
+    def STY_ZeroPage(self, cycles):
+        self.PC += 1
+        self.WriteZeroPage(cycles, self.Y)
+
+    def STY_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        self.WriteZeroPageWithX(cycles, self.Y)
+
+    def STY_Absolute(self, cycles):
+        self.PC += 1
+        self.WriteAbsolute(cycles, self.Y)
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
@@ -279,25 +307,25 @@ class _CommandsMixin:
         0x81: STA_IndirectWithX,
         0x82: NOP,
         0x83: NOP,
-        0x84: NOP,
+        0x84: STY_ZeroPage,
         0x85: STA_ZeroPage,
-        0x86: NOP,
+        0x86: STX_ZeroPage,
         0x87: NOP,
         0x88: NOP,
         0x89: NOP,
         0x8A: NOP,
         0x8B: NOP,
-        0x8C: NOP,
+        0x8C: STY_Absolute,
         0x8D: STA_Absolute,
-        0x8E: NOP,
+        0x8E: STX_Absolute,
         0x8F: NOP,
         0x90: NOP,
         0x91: STA_IndirectWithY,
         0x92: NOP,
         0x93: NOP,
-        0x94: NOP,
+        0x94: STY_ZeroPageWithX,
         0x95: STA_ZeroPageWithX,
-        0x96: NOP,
+        0x96: STX_ZeroPageWithY,
         0x97: NOP,
         0x98: NOP,
         0x99: STA_AbsoluteWithY,

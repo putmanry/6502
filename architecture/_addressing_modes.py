@@ -17,8 +17,8 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        value = self.read_mem(loc)
+        location = (lo_byte << 8) | hi_byte
+        value = self.read_mem(location)
         cycles = cycles - 1
         return value, cycles
 
@@ -63,15 +63,15 @@ class _AddressingModesMixin:
         # print("Zero Page with X Addressing Mode")
         # TODO: Fix memaddress wrap around
         value = self.read_mem(self.PC)
-        loc = value + self.X
+        location = value + self.X
         """
         print(
-            "Val: 0x{:04x}      X: 0x{:04x}    loc: 0x{:04}".format(
-                self.PC, self.x, loc
+            "Val: 0x{:04x}      X: 0x{:04x}    location: 0x{:04}".format(
+                self.PC, self.x, location
             )
         )"""
         cycles = cycles - 3
-        value2 = self.read_mem(loc)
+        value2 = self.read_mem(location)
         return value2, cycles
 
     def ReadAbsoluteWithX(self, cycles):
@@ -87,10 +87,10 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        loc = loc + self.X
+        location = (lo_byte << 8) | hi_byte
+        location = location + self.X
         cycles = cycles - 3
-        value2 = self.read_mem(loc)
+        value2 = self.read_mem(location)
         return value2, cycles
 
     def ReadAbsoluteWithY(self, cycles):
@@ -106,10 +106,10 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        loc = loc + self.Y
+        location = (lo_byte << 8) | hi_byte
+        location = location + self.Y
         cycles = cycles - 3
-        value2 = self.read_mem(loc)
+        value2 = self.read_mem(location)
         return value2, cycles
 
     def ReadIndirectWithX(self, cycles):
@@ -138,8 +138,8 @@ class _AddressingModesMixin:
         # TODO: Handle Zero Page Wrap around
         print("IndirectWithX Addressing Mode")
         value = self.read_mem(self.PC)  # gives us the 0x02
-        loc = self.X + value  # gives the 0x02 + 0x04
-        value2 = self.read_word(loc)  # read from 0x06 to get the 0x0080
+        location = self.X + value  # gives the 0x02 + 0x04
+        value2 = self.read_word(location)  # read from 0x06 to get the 0x0080
         return value2, cycles
 
     def ReadIndirectWithY(self, cycles):
@@ -163,7 +163,7 @@ class _AddressingModesMixin:
         """
         # The operand  $AA is a zero page address, the contents of $AA are added with carry (C)
         # to the Y register
-        #      $AA + Y (C) the results containts the LSB of the EA
+        #      $AA + Y (C) the results containts the lo_byte of the EA
         # The content of address $AA + $01 + C contain the MSB of the EA
         # if Y = $E9 and
         # if $A4 contains $51 and
@@ -175,14 +175,14 @@ class _AddressingModesMixin:
         # print("IndirectWithY Addressing Mode")
         value = self.read_mem(self.PC)  # fetch zero page location $A4 which is $51
         value2 = self.read_mem(value)
-        lsb = value2 + self.Y  # $13A
-        if lsb > 0xFF:  # this means we had a carry
-            lsb = lsb - 0x100
+        lo_byte = value2 + self.Y  # $13A
+        if lo_byte > 0xFF:  # this means we had a carry
+            lo_byte = lo_byte - 0x100
             msb = self.read_mem(value + 1) + 1
         else:  # we didn't have a carry
-            msb = value2 + 1
-        loc = msb << 8 | lsb
-        value3 = self.read_mem(loc)
+            msb = self.read_mem(value + 1)
+        location = msb << 8 | lo_byte
+        value3 = self.read_mem(location)
 
         return value3, cycles
 
@@ -211,8 +211,8 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        self.write_word(loc, data)
+        location = (lo_byte << 8) | hi_byte
+        self.write_word(location, data)
         cycles = cycles - 1
         return cycles
 
@@ -257,14 +257,14 @@ class _AddressingModesMixin:
         # print("Zero Page with X Addressing Mode")
         # TODO: Fix memaddress wrap around
         value = self.read_mem(self.PC)
-        loc = value + self.X
+        location = value + self.X
         """
         print(
-            "Val: 0x{:04x}      X: 0x{:04x}    loc: 0x{:04}".format(
-                self.PC, self.x, loc
+            "Val: 0x{:04x}      X: 0x{:04x}    location: 0x{:04}".format(
+                self.PC, self.x, location
             )
         )"""
-        self.write_mem(loc, data)
+        self.write_mem(location, data)
         cycles = cycles - 3
         return cycles
 
@@ -281,10 +281,10 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        loc = loc + self.X
+        location = (lo_byte << 8) | hi_byte
+        location = location + self.X
         cycles = cycles - 3
-        self.write_mem(loc, data)
+        self.write_mem(location, data)
         return cycles
 
     def WriteAbsoluteWithY(self, cycles, data):
@@ -300,10 +300,10 @@ class _AddressingModesMixin:
         self.PC += 1
         lo_byte = self.read_mem(self.PC)
         self.PC += 1
-        loc = (lo_byte << 8) | hi_byte
-        loc = loc + self.Y
+        location = (lo_byte << 8) | hi_byte
+        location = location + self.Y
         cycles = cycles - 3
-        self.write_mem(loc, data)
+        self.write_mem(location, data)
         return cycles
 
     def WriteIndirectWithX(self, cycles, data):
@@ -332,8 +332,8 @@ class _AddressingModesMixin:
         # TODO: Handle Zero Page Wrap around
         print("IndirectWithX Addressing Mode")
         value = self.read_mem(self.PC)
-        loc = self.X + value
-        self.write_mem(loc, data)
+        location = self.X + value
+        self.write_mem(location, data)
         return cycles
 
     def WriteIndirectWithY(self, cycles, data):
@@ -369,18 +369,18 @@ class _AddressingModesMixin:
         # print("IndirectWithY Addressing Mode")
         value = self.read_mem(self.PC)  # fetch zero page location $A4 which is $51
         value2 = self.read_mem(value)
-        lsb = value2 + self.Y  # $13A
-        if lsb > 0xFF:  # this means we had a carry
-            lsb = lsb - 0x100
+        lo_byte = value2 + self.Y  # $13A
+        if lo_byte > 0xFF:  # this means we had a carry
+            lo_byte = lo_byte - 0x100
             msb = self.read_mem(value + 1) + 1
         else:  # we didn't have a carry
-            msb = value2 + 1
-        loc = msb << 8 | lsb
-        self.write_mem(loc, data)
+            msb = self.read_mem(value + 1)
+        location = msb << 8 | lo_byte
+        self.write_mem(location, data)
 
         return cycles
 
-    def WriteZeroPageWithY(self, cycles):
+    def WriteZeroPageWithY(self, cycles, data):
         """
         The address to be accessed by an instruction using indexed zero page
         addressing is calculated by taking the 8 bit zero page address from
@@ -389,5 +389,5 @@ class _AddressingModesMixin:
         """
         value = self.read_mem(self.PC)
         value2 = value + self.Y
-        value3 = self.read_mem(value2)
-        return value3, cycles
+        self.write_mem(value2, data)
+        return cycles
