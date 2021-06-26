@@ -171,6 +171,34 @@ class _CommandsMixin:
         self.PC += 1
         self.WriteAbsolute(cycles, self.Y)
 
+    """  ========= Transfer Functions ========= """
+
+    def TransfAccSetFlags(self, data):
+        if data == 0:
+            self.ZF = 1
+        if data >= 0x80:
+            self.NF = 1
+
+    def TAX(self, cycles):
+        self.PC += 1
+        self.X = self.A
+        self.TransfAccSetFlags(self.X)
+
+    def TAY(self, cycles):
+        self.PC += 1
+        self.A = self.Y
+        self.TransfAccSetFlags(self.Y)
+
+    def TXA(self, cycles):
+        self.PC += 1
+        self.A = self.X
+        self.TransfAccSetFlags(self.A)
+
+    def TYA(self, cycles):
+        self.PC += 1
+        self.A = self.Y
+        self.TransfAccSetFlags(self.A)
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
@@ -313,7 +341,7 @@ class _CommandsMixin:
         0x87: NOP,
         0x88: NOP,
         0x89: NOP,
-        0x8A: NOP,
+        0x8A: TXA,
         0x8B: NOP,
         0x8C: STY_Absolute,
         0x8D: STA_Absolute,
@@ -327,7 +355,7 @@ class _CommandsMixin:
         0x95: STA_ZeroPageWithX,
         0x96: STX_ZeroPageWithY,
         0x97: NOP,
-        0x98: NOP,
+        0x98: TYA,
         0x99: STA_AbsoluteWithY,
         0x9A: NOP,
         0x9B: NOP,
@@ -343,9 +371,9 @@ class _CommandsMixin:
         0xA5: LDA_ZeroPage,
         0xA6: LDX_ZeroPage,
         0xA7: NOP,
-        0xA8: NOP,
+        0xA8: TAY,
         0xA9: LDA_Immediate,
-        0xAA: NOP,
+        0xAA: TAX,
         0xAB: NOP,
         0xAC: NOP,
         0xAD: LDA_Absolute,
