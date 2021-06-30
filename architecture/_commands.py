@@ -199,6 +199,58 @@ class _CommandsMixin:
         self.A = self.Y
         self.TransfAccSetFlags(self.A)
 
+    """  ========= AND Functions ========= """
+
+    def AND_Immediate(self, cycles):
+        return False
+
+    def AND_ZeroPage(self, cycles):
+        return False
+
+    def AND_ZeroPageWithX(self, cycles):
+        return False
+
+    def AND_Absolute(self, cycles):
+        return False
+
+    def AND_AbsoluteWithX(self, cycles):
+        return False
+
+    def AND_AbsoluteWithY(self, cycles):
+        return False
+
+    def AND_IndirectWithX(self, cycles):
+        return False
+
+    def AND_IndirectWithY(self, cycles):
+        return False
+
+    """  ========= EOR Functions ========= """
+
+    def EOR_Immediate(self, cycles):
+        return False
+
+    def EOR_ZeroPage(self, cycles):
+        return False
+
+    def EOR_ZeroPageWithX(self, cycles):
+        return False
+
+    def EOR_Absolute(self, cycles):
+        return False
+
+    def EOR_AbsoluteWithX(self, cycles):
+        return False
+
+    def EOR_AbsoluteWithY(self, cycles):
+        return False
+
+    def EOR_IndirectWithX(self, cycles):
+        return False
+
+    def EOR_IndirectWithY(self, cycles):
+        return False
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
@@ -236,67 +288,67 @@ class _CommandsMixin:
         0x1E: NOP,
         0x1F: NOP,
         0x20: NOP,
-        0x21: NOP,
+        0x21: AND_IndirectWithX,
         0x22: NOP,
         0x23: NOP,
         0x24: NOP,
-        0x25: NOP,
+        0x25: AND_ZeroPage,
         0x26: NOP,
         0x27: NOP,
         0x28: NOP,
-        0x29: NOP,
+        0x29: AND_Immediate,
         0x2A: NOP,
         0x2B: NOP,
         0x2C: NOP,
-        0x2D: NOP,
+        0x2D: AND_Absolute,
         0x2E: NOP,
         0x2F: NOP,
         0x30: NOP,
-        0x31: NOP,
+        0x31: AND_IndirectWithY,
         0x32: NOP,
         0x33: NOP,
         0x34: NOP,
-        0x35: NOP,
+        0x35: AND_ZeroPageWithX,
         0x36: NOP,
         0x37: NOP,
         0x38: NOP,
-        0x39: NOP,
+        0x39: AND_AbsoluteWithY,
         0x3A: NOP,
         0x3B: NOP,
         0x3C: NOP,
-        0x3D: NOP,
+        0x3D: AND_AbsoluteWithX,
         0x3E: NOP,
         0x3F: NOP,
         0x40: NOP,
-        0x41: NOP,
+        0x41: EOR_IndirectWithX,
         0x42: NOP,
         0x43: NOP,
         0x44: NOP,
-        0x45: NOP,
+        0x45: EOR_ZeroPage,
         0x46: NOP,
         0x47: NOP,
         0x48: NOP,
-        0x49: NOP,
+        0x49: EOR_Immediate,
         0x4A: NOP,
         0x4B: NOP,
         0x4C: NOP,
-        0x4D: NOP,
+        0x4D: EOR_Absolute,
         0x4E: NOP,
         0x4F: NOP,
         0x50: NOP,
-        0x51: NOP,
+        0x51: EOR_IndirectWithY,
         0x52: NOP,
         0x53: NOP,
         0x54: NOP,
-        0x55: NOP,
+        0x55: EOR_ZeroPageWithX,
         0x56: NOP,
         0x57: NOP,
         0x58: NOP,
-        0x59: NOP,
+        0x59: EOR_AbsoluteWithY,
         0x5A: NOP,
         0x5B: NOP,
         0x5C: NOP,
-        0x5D: NOP,
+        0x5D: EOR_AbsoluteWithX,
         0x5E: NOP,
         0x5F: NOP,
         0x60: NOP,
