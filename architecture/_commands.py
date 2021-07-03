@@ -200,15 +200,31 @@ class _CommandsMixin:
         self.TransfAccSetFlags(self.A)
 
     """  ========= AND Functions ========= """
+    # Do the basic function of AND
+    def AND(self, cycles, value):
+        result = self.A & value
+        self.A = result
+        if self.A == 0:
+            self.ZF = 1
+        self.NF = int(self.A >= 0x40)
 
     def AND_Immediate(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_ZeroPage(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_ZeroPageWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_Absolute(self, cycles):
         return False
@@ -251,47 +267,81 @@ class _CommandsMixin:
     def EOR_IndirectWithY(self, cycles):
         return False
 
+    """  ========= ORA Functions ========= """
+
+    def ORA_Immediate(self, cycles):
+        return False
+
+    def ORA_ZeroPage(self, cycles):
+        return False
+
+    def ORA_ZeroPageWithX(self, cycles):
+        return False
+
+    def ORA_Absolute(self, cycles):
+        return False
+
+    def ORA_AbsoluteWithX(self, cycles):
+        return False
+
+    def ORA_AbsoluteWithY(self, cycles):
+        return False
+
+    def ORA_IndirectWithX(self, cycles):
+        return False
+
+    def ORA_IndirectWithY(self, cycles):
+        return False
+
+    """  ========= BIT Functions ========= """
+
+    def BIT_ZeroPage(self, cycles):
+        return False
+
+    def BIT_Absolute(self, cycles):
+        return False
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
     """
     instructions = {
         0x00: NOP,
-        0x01: NOP,
+        0x01: ORA_IndirectWithX,
         0x03: NOP,
         0x04: NOP,
-        0x05: NOP,
+        0x05: ORA_ZeroPage,
         0x06: NOP,
         0x07: NOP,
         0x08: NOP,
-        0x09: NOP,
+        0x09: ORA_Immediate,
         0x0A: NOP,
         0x0B: NOP,
         0x0C: NOP,
-        0x0D: NOP,
+        0x0D: ORA_Absolute,
         0x0E: NOP,
         0x0F: NOP,
         0x10: NOP,
-        0x11: NOP,
+        0x11: ORA_IndirectWithY,
         0x12: NOP,
         0x13: NOP,
         0x14: NOP,
-        0x15: NOP,
+        0x15: ORA_ZeroPageWithX,
         0x16: NOP,
         0x17: NOP,
         0x18: NOP,
-        0x19: NOP,
+        0x19: ORA_AbsoluteWithY,
         0x1A: NOP,
         0x1B: NOP,
         0x1C: NOP,
-        0x1D: NOP,
+        0x1D: ORA_AbsoluteWithX,
         0x1E: NOP,
         0x1F: NOP,
         0x20: NOP,
         0x21: AND_IndirectWithX,
         0x22: NOP,
         0x23: NOP,
-        0x24: NOP,
+        0x24: BIT_ZeroPage,
         0x25: AND_ZeroPage,
         0x26: NOP,
         0x27: NOP,
@@ -299,7 +349,7 @@ class _CommandsMixin:
         0x29: AND_Immediate,
         0x2A: NOP,
         0x2B: NOP,
-        0x2C: NOP,
+        0x2C: BIT_Absolute,
         0x2D: AND_Absolute,
         0x2E: NOP,
         0x2F: NOP,

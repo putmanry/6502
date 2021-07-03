@@ -193,7 +193,7 @@ class Test_LDXInstructions(_BaseTest._BaseTestMixin):
         print("Complete: test_LDXwithAbsolute =======")
         del CPUCopy
 
-    def test_AbsoluteWithY(self):
+    def test_LDXAbsoluteWithY(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 

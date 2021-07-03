@@ -96,7 +96,7 @@ class Test_STAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: test_STAwithAbsolute =======")
         del CPUCopy
 
-    def test_AbsoluteWithY(self):
+    def test_STAAbsoluteWithY(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
@@ -119,7 +119,7 @@ class Test_STAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: STAAbsoluteWithY=======")
         del CPUCopy
 
-    def test_AbsoluteWithX(self):
+    def test_STAAbsoluteWithX(self):
         CPUCopy = copy.deepcopy(self.processor)
 
         instructions = ([0xFFFC, 0x8D], [0xFFFD, 0x80], [0xFFFE, 0x44])
@@ -140,7 +140,7 @@ class Test_STAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: STAAbsoluteWithX=======")
         del CPUCopy
 
-    def test_IndirectWithX(self):
+    def test_STAIndirectWithX(self):
         CPUCopy = copy.deepcopy(self.processor)
 
         # Test 1 -
@@ -158,7 +158,7 @@ class Test_STAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: STAIndirectWithX=======")
         del CPUCopy
 
-    def test_IndirectWithY(self):
+    def test_STAIndirectWithY(self):
         CPUCopy = copy.deepcopy(self.processor)
 
         # TODO: This needs lots of work.

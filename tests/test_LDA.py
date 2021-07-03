@@ -112,7 +112,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: test_LDAwithZeroPage =======")
         del CPUCopy
 
-    def test_ZeroPageWithX(self):
+    def test_LDAZeroPageWithX(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
@@ -157,7 +157,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: test_LDAwithZeroPageWithX =======")
         del CPUCopy
 
-    def test_AbsoluteWithX(self):
+    def test_LDAAbsoluteWithX(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
@@ -239,7 +239,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: test_LDAwithAbsolute =======")
         del CPUCopy
 
-    def test_AbsoluteWithY(self):
+    def test_LDAAbsoluteWithY(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
@@ -282,7 +282,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: LDAAbsoluteWithY=======")
         del CPUCopy
 
-    def test_IndirectWithX(self):
+    def test_LDAIndirectWithX(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
@@ -358,7 +358,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
         print("Complete: LDAIndirectWithX =======")
         del CPUCopy
 
-    def test_IndirectWithY(self):
+    def test_LDAIndirectWithY(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
