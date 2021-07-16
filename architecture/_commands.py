@@ -227,19 +227,34 @@ class _CommandsMixin:
         return cycles
 
     def AND_Absolute(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_AbsoluteWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_AbsoluteWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_IndirectWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     def AND_IndirectWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.AND(cycles, value)
+        return cycles
 
     """  ========= EOR Functions ========= """
 

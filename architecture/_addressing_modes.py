@@ -98,7 +98,7 @@ class _AddressingModesMixin:
         The address to be accessed by an instruction using Y register indexed
         absolute addressing is computed by taking the 16 bit address from
         the instruction and added the contents of the Y register. For example
-        if X contains $92 then an STA $2000,Y instruction will store the
+        if Y contains $92 then an STA $2000,Y instruction will store the
         accumulator at $2092 (e.g. $2000 + $92).
         """
         # print("AbsoluteWithY Addressing Mode")
@@ -136,7 +136,7 @@ class _AddressingModesMixin:
         that like targetAddress = (X + opcode[1]) & 0xFF . """
 
         # TODO: Handle Zero Page Wrap around
-        print("IndirectWithX Addressing Mode")
+        # print("IndirectWithX Addressing Mode")
         value = self.read_mem(self.PC)  # gives us the 0x02
         location = self.X + value  # gives the 0x02 + 0x04
         value2 = self.read_word(location)  # read from 0x06 to get the 0x0080
@@ -178,10 +178,10 @@ class _AddressingModesMixin:
         lo_byte = value2 + self.Y  # $13A
         if lo_byte > 0xFF:  # this means we had a carry
             lo_byte = lo_byte - 0x100
-            msb = self.read_mem(value + 1) + 1
+            hi_byte = self.read_mem(value + 1) + 1
         else:  # we didn't have a carry
-            msb = self.read_mem(value + 1)
-        location = msb << 8 | lo_byte
+            hi_byte = self.read_mem(value + 1)
+        location = hi_byte << 8 | lo_byte
         value3 = self.read_mem(location)
 
         return value3, cycles
@@ -372,10 +372,10 @@ class _AddressingModesMixin:
         lo_byte = value2 + self.Y  # $13A
         if lo_byte > 0xFF:  # this means we had a carry
             lo_byte = lo_byte - 0x100
-            msb = self.read_mem(value + 1) + 1
+            hi_byte = self.read_mem(value + 1) + 1
         else:  # we didn't have a carry
-            msb = self.read_mem(value + 1)
-        location = msb << 8 | lo_byte
+            hi_byte = self.read_mem(value + 1)
+        location = hi_byte << 8 | lo_byte
         self.write_mem(location, data)
 
         return cycles
