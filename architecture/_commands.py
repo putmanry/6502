@@ -284,37 +284,84 @@ class _CommandsMixin:
 
     """  ========= ORA Functions ========= """
 
+    # Do the basic function of OR
+    def OR(self, cycles, value):
+        result = self.A | value
+        self.A = result
+        if self.A == 0:
+            self.ZF = 1
+        self.NF = int(self.A >= 0x40)
+
     def ORA_Immediate(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_ZeroPage(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_ZeroPageWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_Absolute(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_AbsoluteWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_AbsoluteWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_IndirectWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     def ORA_IndirectWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.OR(cycles, value)
+        return cycles
 
     """  ========= BIT Functions ========= """
 
+    def BIT(self, cycles, value):
+        result = self.A & value
+        if result == 0:
+            self.ZF = 0
+        bit_7 = (value & 0b10000000) >> 7
+        self.NF = bit_7
+        bit_6 = (value & 0b01000000) >> 6
+        self.OF = bit_6
+
     def BIT_ZeroPage(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.BIT(cycles, value)
+        return cycles
 
     def BIT_Absolute(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.BIT(cycles, value)
+        return cycles
 
     """
         Dictionary which allows us to lookup the various opcodes and call the
