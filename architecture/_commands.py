@@ -258,14 +258,30 @@ class _CommandsMixin:
 
     """  ========= EOR Functions ========= """
 
+    def EOR(self, cycles, value):
+        result = self.A ^ value
+        self.A = result
+        if self.A == 0:
+            self.ZF = 1
+        self.NF = int(self.A >= 0x40)
+
     def EOR_Immediate(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_ZeroPage(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_ZeroPageWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_Absolute(self, cycles):
         return False

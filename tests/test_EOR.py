@@ -41,129 +41,148 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
-        # Test 1 - Zero load
-        instructions = ([0xFFFC, 0xAA], [0xFFFD, 0xBB])
+        # Test 1
+        test_value_mem = 0xAA
+        test_value_reg = 0xAA
+        instructions = ([0xFFFC, 0x29], [0xFFFD, test_value_mem])
         self.programSetup(instructions)
-        self.processor.A = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAX(3)
+        self.processor.A = test_value_reg
+        self.processor.EOR_Immediate(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "1 - TAX failed",
+            test_value_reg ^ test_value_mem,
+            "1 - EORImediate failed",
         )
         self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
 
         # Test 2 - Negative load
-        instructions = ([0xFFFC, 0xAA], [0xFFFD, 0xBB])
+        test_value_mem = 0xAA
+        test_value_reg = 0x00
+        instructions = ([0xFFFC, 0x29], [0xFFFD, test_value_mem])
         self.programSetup(instructions)
-        self.processor.A = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAX(3)
+        self.processor.A = test_value_reg
+        self.processor.EOR_Immediate(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "2 - TAX failed",
+            test_value_reg ^ test_value_mem,
+            "2 - EORImmediate failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3 - Positive load
-        instructions = ([0xFFFC, 0xAA], [0xFFFD, 0xBB])
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
+        instructions = ([0xFFFC, 0x29], [0xFFFD, test_value_mem])
         self.programSetup(instructions)
-        self.processor.A = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAX(3)
+        self.processor.A = test_value_reg
+        self.processor.EOR_Immediate(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "3 - TAX failed",
+            test_value_reg ^ test_value_mem,
+            "3 - EORImmediate failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 0)
 
-        print("Complete: test_TAX =======")
+        print("Complete: test_EORImmediate=======")
         del CPUCopy
 
     def test_EORZeroPage(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
-        # Test 1 - Zero load
-        instructions = ([0xFFFC, 0xA8], [0xFFFD, 0xBB])
+        test_value_mem = 0xAA
+        test_value_reg = 0xAA
+        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
-        self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAY(3)
+        self.processor.A = test_value_reg
+        self.processor.EOR_ZeroPage(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.Y,
-            "1 - TAY failed",
+            test_value_reg ^ test_value_mem,
+            "1 - EORZeroPage failed",
         )
         self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
 
-        # Test 2 - Negative load
-        instructions = ([0xFFFC, 0xA8], [0xFFFD, 0xBB])
+        # Test 2
+        test_value_mem = 0xAA
+        test_value_reg = 0x00
+        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
-        self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAY(3)
+        self.processor.A = test_value_reg
+        self.processor.EOR_ZeroPage(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.Y,
-            "2 - TAY failed",
+            test_value_reg ^ test_value_mem,
+            "2 - EORZeroPage failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
-        # Test 3 - Positive load
-        instructions = ([0xFFFC, 0xA8], [0xFFFD, 0xBB])
+        # Test 3
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
+        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
-        self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TAY(3)
+        self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
+        self.processor.EOR_ZeroPage(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.Y,
-            "3 - TAY failed",
+            test_value_reg ^ test_value_mem,
+            "3 - EORZeroPage failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 0)
 
-        print("Complete: test_TAY =======")
+        print("Complete: test_EORZeroPage =======")
         del CPUCopy
 
     def test_EORZeroPageWithX(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
-        # Test 1 - Zero load
-        instructions = ([0xFFFC, 0x8A], [0xFFFD, 0xBB])
+        test_value_mem = 0xAA
+        test_value_reg = 0xAA
+        instructions = ([0xFFFC, 0x35], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TXA(3)
+        self.processor.X = 0x10
+        self.processor.A = test_value_reg
+        self.processor.EOR_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "1 - TXA failed",
+            test_value_reg ^ test_value_mem,
+            "1 - test_EORZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
 
-        # Test 2 - Negative load
-        instructions = ([0xFFFC, 0x8A], [0xFFFD, 0xBB])
+        # Test 2
+        test_value_mem = 0xAA
+        test_value_reg = 0x00
+        instructions = ([0xFFFC, 0x35], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TXA(3)
+        self.processor.X = 0x10
+        self.processor.A = test_value_reg
+        self.processor.EOR_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "2 - TXA failed",
+            test_value_reg ^ test_value_mem,
+            "2 - test_EORZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
-        # Test 3 - Positive load
-        instructions = ([0xFFFC, 0x8A], [0xFFFD, 0xBB])
+        # Test 3
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
+        instructions = ([0xFFFC, 0x35], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TXA(3)
+        self.processor.X = 0x10
+        self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
+        self.processor.EOR_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
-            self.processor.X,
-            "3 - TXA failed",
+            test_value_reg ^ test_value_mem,
+            "3 - test_EORZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 0)
 
-        print("Complete: test_TXA =======")
+        print("Complete: test_EORZeroPageWithX =======")
         del CPUCopy
 
     def test_EORAbsolute(self):
@@ -174,11 +193,11 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsolute(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
-            "1 - TYA failed",
+            "1 - test_EORZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, 1, CPUCopy.NF)
 
@@ -186,7 +205,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsolute(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -198,7 +217,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsolute(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -206,7 +225,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 0)
 
-        print("Complete: test_TYA =======")
+        print("Complete: test_EORZeroPageWithX =======")
         del CPUCopy
 
     def test_EORAbsoluteWithX(self):
@@ -217,7 +236,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -229,7 +248,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -241,7 +260,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -260,7 +279,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -272,7 +291,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -284,7 +303,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORAbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -303,7 +322,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -315,7 +334,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -327,7 +346,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithX(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -346,7 +365,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x00  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -358,7 +377,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x8F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
@@ -370,7 +389,7 @@ class Test_EORInstructions(_BaseTest._BaseTestMixin):
         instructions = ([0xFFFC, 0x98], [0xFFFD, 0xBB])
         self.programSetup(instructions)
         self.processor.Y = 0x7F  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.TYA(3)
+        self.processor.EORIndirectWithY(3)
         self.assertEqual(
             self.processor.A,
             self.processor.Y,
