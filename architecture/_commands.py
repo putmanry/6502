@@ -284,19 +284,34 @@ class _CommandsMixin:
         return cycles
 
     def EOR_Absolute(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_AbsoluteWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_AbsoluteWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_IndirectWithX(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     def EOR_IndirectWithY(self, cycles):
-        return False
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.EOR(cycles, value)
+        return cycles
 
     """  ========= ORA Functions ========= """
 
