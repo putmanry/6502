@@ -315,8 +315,8 @@ class _CommandsMixin:
 
     """  ========= ORA Functions ========= """
 
-    # Do the basic function of OR
-    def OR(self, cycles, value):
+    # Do the basic function of ORA
+    def ORA(self, cycles, value):
         result = self.A | value
         self.A = result
         if self.A == 0:
@@ -326,49 +326,49 @@ class _CommandsMixin:
     def ORA_Immediate(self, cycles):
         self.PC += 1
         value, cycles = self.ReadImmediate(self.PC)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_ZeroPage(self, cycles):
         self.PC += 1
         value, cycles = self.ReadZeroPage(self.PC)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_ZeroPageWithX(self, cycles):
         self.PC += 1
         value, cycles = self.ReadZeroPageWithX(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_Absolute(self, cycles):
         self.PC += 1
         value, cycles = self.ReadAbsolute(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_AbsoluteWithX(self, cycles):
         self.PC += 1
         value, cycles = self.ReadAbsoluteWithX(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_AbsoluteWithY(self, cycles):
         self.PC += 1
         value, cycles = self.ReadAbsoluteWithY(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_IndirectWithX(self, cycles):
         self.PC += 1
         value, cycles = self.ReadIndirectWithX(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     def ORA_IndirectWithY(self, cycles):
         self.PC += 1
         value, cycles = self.ReadIndirectWithY(cycles)
-        self.OR(cycles, value)
+        self.ORA(cycles, value)
         return cycles
 
     """  ========= BIT Functions ========= """
@@ -392,6 +392,144 @@ class _CommandsMixin:
         self.PC += 1
         value, cycles = self.ReadAbsolute(cycles)
         self.BIT(cycles, value)
+        return cycles
+
+    """  ========= ADC Functions ========= """
+
+    # Do the basic function of ADC
+    # http://www.righto.com/2012/12/the-6502-overflow-flag-explained.html
+    # http://www.righto.com/2013/01/a-small-part-of-6502-chip-explained.html
+    # http://www.6502.org/tutorials/vflag.html
+    # From the MCS6500 microcomputer family programming manual:
+    # Set the carry flag when the sum of a binary add exceeds 255 or when the sum of a
+    # a decimal add exceeds 99, otherwise the carry is reset. The overflow flag is set
+    # when the sign or bit 7 is changed due to the result exceeding +127 or -128, otherwise
+    # overflow is reset. The negative flag is set if the accumulatory result contains bit 7
+    # on, otherwise the negative flag is reset. The zero flag is set if the acumulator
+    # result is 0, otherwise the zero flag is reset.
+    def ADC(self, cycles, value):
+        result = self.A + value + self.CF
+        self.CF = int(result > 0xFF)
+        self.OF = int((result > 127) | (result < -128))
+        # mask off any bits above an 8 bit value since
+        # self.A is only 8 bits.
+        self.A = result & 0x00FF
+        self.ZF = int(self.A == 0)
+        self.NF = int(self.A >= 0x40)
+
+    def ADC_Immediate(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_ZeroPage(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_Absolute(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_AbsoluteWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_IndirectWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    def ADC_IndirectWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.ADC(cycles, value)
+        return cycles
+
+    """  ========= SBC Functions ========= """
+
+    # Do the basic function of SBC
+    #  A-M-(1-C)
+    def SBC(self, cycles, value):
+        result = self.A - value - (1 - self.CF)
+        # ZF set if A = 0
+        self.ZF = int(result == 0)
+        # NF set if bit 7 is set
+        # but since this is python, check if just negative instead
+        self.NF = int(result < 0)
+
+        # CF clear if overflow in bit 7
+        # OF set if the sign bit is incorrect
+        if (result > 0xFF) | (result < 0x00):
+            self.CF = 0
+            self.OF = 1
+        self.A = result & 0x00FF
+
+    def SBC_Immediate(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_ZeroPage(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_Absolute(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_AbsoluteWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_IndirectWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.SBC(cycles, value)
+        return cycles
+
+    def SBC_IndirectWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.SBC(cycles, value)
         return cycles
 
     """
@@ -495,35 +633,35 @@ class _CommandsMixin:
         0x5E: NOP,
         0x5F: NOP,
         0x60: NOP,
-        0x61: NOP,
+        0x61: ADC_IndirectWithX,
         0x62: NOP,
         0x63: NOP,
         0x64: NOP,
-        0x65: NOP,
+        0x65: ADC_ZeroPage,
         0x66: NOP,
         0x67: NOP,
         0x68: NOP,
-        0x69: NOP,
+        0x69: ADC_Immediate,
         0x6A: NOP,
         0x6B: NOP,
         0x6C: NOP,
-        0x6D: NOP,
+        0x6D: ADC_Absolute,
         0x6E: NOP,
         0x6F: NOP,
         0x70: NOP,
-        0x71: NOP,
+        0x71: ADC_IndirectWithY,
         0x72: NOP,
         0x73: NOP,
         0x74: NOP,
-        0x75: NOP,
+        0x75: ADC_ZeroPageWithX,
         0x76: NOP,
         0x77: NOP,
         0x78: NOP,
-        0x79: NOP,
+        0x79: ADC_AbsoluteWithY,
         0x7A: NOP,
         0x7B: NOP,
         0x7C: NOP,
-        0x7D: NOP,
+        0x7D: ADC_AbsoluteWithX,
         0x7E: NOP,
         0x7F: NOP,
         0x80: NOP,
@@ -623,35 +761,35 @@ class _CommandsMixin:
         0xDE: NOP,
         0xDF: NOP,
         0xE0: NOP,
-        0xE1: NOP,
+        0xE1: SBC_IndirectWithX,
         0xE2: NOP,
         0xE3: NOP,
         0xE4: NOP,
-        0xE5: NOP,
+        0xE5: SBC_ZeroPage,
         0xE6: NOP,
         0xE7: NOP,
         0xE8: NOP,
-        0xE9: NOP,
+        0xE9: SBC_Immediate,
         0xEA: NOP,
         0xEB: NOP,
         0xEC: NOP,
-        0xED: NOP,
+        0xED: SBC_Absolute,
         0xEE: NOP,
         0xEF: NOP,
         0xF0: NOP,
-        0xF1: NOP,
+        0xF1: SBC_IndirectWithY,
         0xF2: NOP,
         0xF3: NOP,
         0xF4: NOP,
-        0xF5: NOP,
+        0xF5: SBC_ZeroPageWithX,
         0xF6: NOP,
         0xF7: NOP,
         0xF8: NOP,
-        0xF9: NOP,
+        0xF9: SBC_AbsoluteWithY,
         0xFA: NOP,
         0xFB: NOP,
         0xFC: NOP,
-        0xFD: NOP,
+        0xFD: SBC_AbsoluteWithX,
         0xFE: NOP,
         0xFF: NOP,
     }

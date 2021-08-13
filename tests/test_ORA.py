@@ -51,7 +51,7 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAImmediate failed",
+            "1 - ORAImediate failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -70,8 +70,8 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3 - Positive load
-        test_value_mem = 0x30
-        test_value_reg = 0x20
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
         instructions = ([0xFFFC, 0x09], [0xFFFD, test_value_mem])
         self.programSetup(instructions)
         self.processor.A = test_value_reg
@@ -81,18 +81,18 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
             test_value_reg | test_value_mem,
             "3 - ORAImmediate failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         print("Complete: test_ORAImmediate=======")
         del CPUCopy
 
     def test_ORAZeroPage(self):
+        # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
 
-        # For comparison at the end to ensure not inadvertent register flags changed
         test_value_mem = 0xAA
         test_value_reg = 0xAA
-        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
+        instructions = ([0xFFFC, 0x05], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
         self.processor.A = test_value_reg
         self.processor.ORA_ZeroPage(3)
@@ -106,7 +106,7 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         # Test 2
         test_value_mem = 0xAA
         test_value_reg = 0x00
-        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
+        instructions = ([0xFFFC, 0x05], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
         self.processor.A = test_value_reg
         self.processor.ORA_ZeroPage(3)
@@ -118,9 +118,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
-        instructions = ([0xFFFC, 0x25], [0xFFFD, 0x10], [0x0010, test_value_mem])
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
+        instructions = ([0xFFFC, 0x05], [0xFFFD, 0x10], [0x0010, test_value_mem])
         self.programSetup(instructions)
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
         self.processor.ORA_ZeroPage(3)
@@ -129,7 +129,7 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
             test_value_reg | test_value_mem,
             "3 - ORAZeroPage failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         print("Complete: test_ORAZeroPage =======")
         del CPUCopy
@@ -140,47 +140,47 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
 
         test_value_mem = 0xAA
         test_value_reg = 0xAA
-        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x80], [0x008F, test_value_mem])
+        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x0F
+        self.processor.X = 0x10
         self.processor.A = test_value_reg
         self.processor.ORA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAZeroPageWithX failed",
+            "1 - test_ORAZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 2
         test_value_mem = 0xAA
         test_value_reg = 0x00
-        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x80], [0x008F, test_value_mem])
+        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x0F
+        self.processor.X = 0x10
         self.processor.A = test_value_reg
         self.processor.ORA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "2 - ORAZeroPageWithX failed",
+            "2 - test_ORAZeroPageWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
-        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x80], [0x008F, test_value_mem])
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
+        instructions = ([0xFFFC, 0x15], [0xFFFD, 0x10], [0x0020, test_value_mem])
         self.programSetup(instructions)
-        self.processor.X = 0x0F
+        self.processor.X = 0x10
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
         self.processor.ORA_ZeroPageWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "3 - ORAZeroPageWithX failed",
+            "3 - test_ORAZeroPageWithX failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         print("Complete: test_ORAZeroPageWithX =======")
         del CPUCopy
@@ -194,9 +194,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_reg = 0xAA
         instructions = (
             [0xFFFC, 0x0D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x4480, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0020, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
@@ -204,7 +204,7 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAAbsolute failed",
+            "1 - test_ORAAbsolute failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -213,9 +213,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_reg = 0x00
         instructions = (
             [0xFFFC, 0x0D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x4480, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0020, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg
@@ -223,18 +223,18 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "2 - ORAAbsolute failed",
+            "2 - test_ORAAbsolute failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
         instructions = (
             [0xFFFC, 0x0D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x4480, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0020, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
@@ -242,9 +242,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "3 - ORAAbsolutefailed",
+            "3 - test_ORAAbsolute",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         print("Complete: test_ORAAbsolute =======")
         del CPUCopy
@@ -258,18 +258,18 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_reg = 0xAA
         instructions = (
             [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.X = 0x0F
+        self.processor.X = 0x10
         self.processor.ORA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAAbsoluteWithX failed",
+            "1 - test_ORAAbsoluteWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -278,42 +278,42 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_reg = 0x00
         instructions = (
             [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg
-        self.processor.X = 0x0F
+        self.processor.X = 0x10
         self.processor.ORA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "2 - ORAAbsoluteWithX failed",
+            "2 - test_ORAAbsoluteWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
         instructions = (
             [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
-        self.processor.A = test_value_reg
-        self.processor.X = 0x0F
+        self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
+        self.processor.X = 0x10
         self.processor.ORA_AbsoluteWithX(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "3 - ORAAbsoluteWithX failed",
+            "3 - test_ORAAbsoluteWithX failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
-        print("Complete: test_ORAAbsoluteWithX =======")
+        print("Complete: test_ORAAbsoluteWithXt_TYA =======")
         del CPUCopy
 
     def test_ORAAbsoluteWithY(self):
@@ -324,19 +324,19 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_mem = 0xAA
         test_value_reg = 0xAA
         instructions = (
-            [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFC, 0x19],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
-        self.processor.Y = 0x0F
+        self.processor.Y = 0x10
         self.processor.ORA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAAbsoluteWithY failed",
+            "1 - test_ORAAbsoluteWithY failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -344,41 +344,41 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         test_value_mem = 0xAA
         test_value_reg = 0x00
         instructions = (
-            [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFC, 0x19],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
         self.processor.A = test_value_reg
-        self.processor.Y = 0x0F
+        self.processor.Y = 0x10
         self.processor.ORA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "2 - ORAAbsoluteWithY failed",
+            "2 - test_ORAAbsoluteWithY failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
         instructions = (
-            [0xFFFC, 0x1D],
-            [0xFFFD, 0x80],
-            [0xFFFE, 0x44],
-            [0x448F, test_value_mem],
+            [0xFFFC, 0x19],
+            [0xFFFD, 0x20],
+            [0xFFFE, 0x00],
+            [0x0030, test_value_mem],
         )
         self.programSetup(instructions)
-        self.processor.A = test_value_reg
-        self.processor.Y = 0x0F
+        self.processor.A = test_value_reg  # Has to come after programSetup due to reset processor clearing registers.
+        self.processor.Y = 0x10
         self.processor.ORA_AbsoluteWithY(3)
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "3 - ORAAbsoluteWithY failed",
+            "3 - test_ORAAbsoluteWithY failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         print("Complete: test_ORAAbsoluteWithY =======")
         del CPUCopy
@@ -388,6 +388,48 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         CPUCopy = copy.deepcopy(self.processor)
 
         # Test 1 - Zero load
+        test_value_mem = 0xAA
+        test_value_reg = 0xAA
+        instructions = (
+            [0xFFFC, 0x01],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, test_value_mem],
+        )
+        self.programSetup(instructions)
+        self.processor.A = test_value_reg
+        self.processor.X = 0x04
+        self.processor.ORA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A,
+            test_value_reg | test_value_mem,
+            "1 - test_ORAIndirectWithX failed",
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 2 - Negative load
+        test_value_mem = 0xAA
+        test_value_reg = 0x00
+        instructions = (
+            [0xFFFC, 0x01],
+            [0xFFFD, 0x02],
+            [0x0006, 0x00],
+            [0x0007, 0x80],
+            [0x8000, test_value_mem],
+        )
+        self.programSetup(instructions)
+        self.processor.A = test_value_reg
+        self.processor.X = 0x04
+        self.processor.ORA_IndirectWithX(3)
+        self.assertEqual(
+            self.processor.A,
+            test_value_reg | test_value_mem,
+            "2 - test_ORAIndirectWithX failed",
+        )
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
+
+        # Test 3
         test_value_mem = 0x4A
         test_value_reg = 0x40
         instructions = (
@@ -404,51 +446,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAIndirectWithX failed",
+            "3 - test_ORAIndirectWithX failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
-
-        # Test 2 - Negative load
-        test_value_mem = 0xAA
-        test_value_reg = 0x00
-        instructions = (
-            [0xFFFC, 0x21],
-            [0xFFFD, 0x02],
-            [0x0006, 0x00],
-            [0x0007, 0x80],
-            [0x8000, test_value_mem],
-        )
-        self.programSetup(instructions)
-        self.processor.A = test_value_reg
-        self.processor.X = 0x04
-        self.processor.ORA_IndirectWithX(3)
-        self.assertEqual(
-            self.processor.A,
-            test_value_reg | test_value_mem,
-            "2 - ORAIndirectWithX failed",
-        )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
-
-        # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
-        instructions = (
-            [0xFFFC, 0x21],
-            [0xFFFD, 0x02],
-            [0x0006, 0x00],
-            [0x0007, 0x80],
-            [0x8000, test_value_mem],
-        )
-        self.programSetup(instructions)
-        self.processor.A = test_value_reg
-        self.processor.X = 0x04
-        self.processor.ORA_IndirectWithX(3)
-        self.assertEqual(
-            self.processor.A,
-            test_value_reg | test_value_mem,
-            "3 - ORAIndirectWithX failed",
-        )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
 
         print("Complete: test_ORAIndirectWithX =======")
         del CPUCopy
@@ -474,7 +474,7 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "1 - ORAIndirectWithY failed",
+            "1 - test_ORAIndirectWithY failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
@@ -495,13 +495,13 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "2 - ORAIndirectWithY failed",
+            "2 - test_ORAIndirectWithY failed",
         )
         self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
         # Test 3
-        test_value_mem = 0x30
-        test_value_reg = 0x20
+        test_value_mem = 0x4A
+        test_value_reg = 0x40
         instructions = (
             [0xFFFC, 0x11],
             [0xFFFD, 0xA4],
@@ -516,9 +516,9 @@ class Test_ORAInstructions(_BaseTest._BaseTestMixin):
         self.assertEqual(
             self.processor.A,
             test_value_reg | test_value_mem,
-            "3 - ORAIndirectWithY failed",
+            "3 - test_ORAIndirectWithY failed",
         )
-        self.checkRegisters(CPUCopy, CPUCopy.ZF, CPUCopy.NF)
+        self.checkRegisters(CPUCopy, CPUCopy.ZF, 1)
 
-        print("Complete: test_ORA_IndirectWithY =======")
+        print("Complete: test_ORAIndirectWithY =======")
         del CPUCopy

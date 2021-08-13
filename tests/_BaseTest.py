@@ -18,13 +18,13 @@ class _BaseTestMixin(unittest.TestCase):
     def tearDown(self) -> None:
         del self.processor
 
-    def checkRegisters(self, CPUCopy, ZFCopy=0, NFCopy=0):
-        self.assertEqual(CPUCopy.CF, self.processor.CF, "CF not the same")
+    def checkRegisters(self, CPUCopy, ZFCopy=0, NFCopy=0, CFCopy=0, OFCopy=0):
         self.assertEqual(CPUCopy.ID, self.processor.ID, "ID not the same")
         self.assertEqual(CPUCopy.DM, self.processor.DM, "DM not the same")
         self.assertEqual(CPUCopy.BC, self.processor.BC, "BC not the same")
-        self.assertEqual(CPUCopy.OF, self.processor.OF, "OF not the same")
 
+        self.assertEqual(self.processor.OF, OFCopy, "OF not set correctly")
+        self.assertEqual(self.processor.CF, CFCopy, "CF not set correctly")
         self.assertEqual(self.processor.ZF, ZFCopy, "ZF not set correctly")
         self.assertEqual(self.processor.NF, NFCopy, "NF not set correctly")
 
