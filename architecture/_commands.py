@@ -532,6 +532,65 @@ class _CommandsMixin:
         self.SBC(cycles, value)
         return cycles
 
+    """  ========= CMP Functions ========= """
+
+    # Do the basic function of CMP
+    def CMP(self, cycles, value):
+        if self.A >= value:
+            self.CF = 1
+        if self.A == value:
+            self.ZF = 1
+        if (self.A - value) < 0:
+            self.NF = 1
+
+    def CMP_Immediate(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadImmediate(self.PC)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_ZeroPage(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPage(self.PC)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_ZeroPageWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadZeroPageWithX(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_Absolute(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsolute(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_AbsoluteWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithX(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_AbsoluteWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadAbsoluteWithY(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_IndirectWithX(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithX(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
+    def CMP_IndirectWithY(self, cycles):
+        self.PC += 1
+        value, cycles = self.ReadIndirectWithY(cycles)
+        self.CMP(cycles, value)
+        return cycles
+
     """
         Dictionary which allows us to lookup the various opcodes and call the
         associated function.
@@ -729,35 +788,35 @@ class _CommandsMixin:
         0xBE: LDX_AbsoluteWithY,
         0xBF: NOP,
         0xC0: NOP,
-        0xC1: NOP,
+        0xC1: CMP_IndirectWithX,
         0xC2: NOP,
         0xC3: NOP,
         0xC4: NOP,
-        0xC5: NOP,
+        0xC5: CMP_ZeroPage,
         0xC6: NOP,
         0xC7: NOP,
         0xC8: NOP,
-        0xC9: NOP,
+        0xC9: CMP_Immediate,
         0xCA: NOP,
         0xCB: NOP,
         0xCC: NOP,
-        0xCD: NOP,
+        0xCD: CMP_Absolute,
         0xCE: NOP,
         0xCF: NOP,
         0xD0: NOP,
-        0xD1: NOP,
+        0xD1: CMP_IndirectWithY,
         0xD2: NOP,
         0xD3: NOP,
         0xD4: NOP,
-        0xD5: NOP,
+        0xD5: CMP_ZeroPageWithX,
         0xD6: NOP,
         0xD7: NOP,
         0xD8: NOP,
-        0xD9: NOP,
+        0xD9: CMP_AbsoluteWithY,
         0xDA: NOP,
         0xDB: NOP,
         0xDC: NOP,
-        0xDD: NOP,
+        0xDD: CMP_AbsoluteWithX,
         0xDE: NOP,
         0xDF: NOP,
         0xE0: NOP,
