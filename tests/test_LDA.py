@@ -1,13 +1,15 @@
-# from architecture.processor import CPU_6502
-import unittest
-from architecture.processor import CPU_6502
+# Standard libarary imports
 import copy
 import datetime
+import unittest
+
+# local application imports
 import _BaseTest
+import processor
 
 """
-LDA - Load Accumulator			
-			
+LDA - Load Accumulator
+
 A,Z,N = M			
 			
 Loads a byte of memory into the accumulator setting the zero and negative flags as appropriate.			
@@ -40,6 +42,7 @@ class Test_LDAInstructions(_BaseTest._BaseTestMixin):
     def test_LDAwithImmediate(self):
         # For comparison at the end to ensure not inadvertent register flags changed
         CPUCopy = copy.deepcopy(self.processor)
+        cpu = CPU_6502
 
         # Test 1 - Check and see if NF is getting set correctly on a negative value
         # ZF should not change

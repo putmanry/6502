@@ -1,6 +1,10 @@
-import unittest
+# Standard libarary imports
 import datetime
-from architecture.processor import CPU_6502
+import unittest
+
+
+# local application imports
+import processor as proc
 
 
 class _BaseTestMixin(unittest.TestCase):
@@ -11,7 +15,7 @@ class _BaseTestMixin(unittest.TestCase):
         print("\n*************** New Test Run ****************")
         ct = datetime.datetime.now()
         print("timestamp: ", ct)
-        self.processor = CPU_6502()
+        self.processor = proc.CPU_6502()
         self.processor.reset()
         # self.processor.__str__()
 
